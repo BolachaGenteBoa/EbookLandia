@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar - EbookLandia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe); 
+            height: 100vh; display: flex; align-items: center; justify-content: center; 
+        }
+        .container { 
+            background: white; padding: 40px; border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 400px; text-align: center; 
+        }
+        h2 { color: #2d3436; margin-bottom: 20px; }
+        input { 
+            width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #dfe6e9; 
+            border-radius: 8px; outline: none; transition: 0.3s; 
+        }
+        input:focus { border-color: #6c5ce7; }
+        button { 
+            width: 100%; padding: 12px; border: none; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; 
+        }
+        .btn-primary { background: #00cec9; color: white; }
+        .btn-primary:hover { background: #00b894; }
+        .btn-secondary { background: white; color: #6c5ce7; border: 1px solid #6c5ce7; margin-top: 5px;}
+        
+        /* Abas de alternancia */
+        .toggle-box { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .toggle-btn { background: none; border: none; color: #999; cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 5px; }
+        .toggle-btn.active { color: #6c5ce7; border-color: #6c5ce7; font-weight: bold; }
+        
+        .hidden { display: none; }
+        .erro { color: red; font-size: 0.8rem; margin-top: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📚 EbookLandia</h1>
+        <br>
+        
+        <div class="toggle-box">
+            <button class="toggle-btn active" onclick="mudarAba('login')">Entrar</button>
+            <button class="toggle-btn" onclick="mudarAba('cadastro')">Registrar Conta</button>
+        </div>
+
+        <div id="form-login">
+            <input type="text" id="log-user" placeholder="Nome de Usuário">
+            <input type="password" id="log-pass" placeholder="Senha">
+            <button class="btn-primary" onclick="fazerLogin()" id="btn-login-acao">ENTRAR</button>
+            <p class="erro" id="erro-login"></p>
+        </div>
+
+        <div id="form-cadastro" class="hidden">
+            <input type="text" id="reg-user" placeholder="Crie um Usuário">
+            <input type="password" id="reg-pass" placeholder="Crie uma Senha">
+            <button class="btn-primary" onclick="registrar()" id="btn-reg-acao">CRIAR CONTA</button>
+            <p class="erro" id="erro-reg"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB9azJhGclPOlfT249fcLWiztUSt88GY8",
+            authDomain: "ebooklandia-f041a.firebaseapp.com",
+            projectId: "ebooklandia-f041a",
+            storageBucket: "ebooklandia-f041a.firebasestorage.app",
+            messagingSenderId: "385658292639",
+            appId: "1:385658292639:web:3b9255d914c303ff3e95aa"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Funções para o HTML acessar
+        window.mudarAba = (aba) => {
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('erro-login').style.display = 'none';
+            document.getElementById('erro-reg').style.display = 'none';
+            
+            if(aba === 'login') {
+                document.getElementById('form-login').classList.remove('hidden');
+                document.getElementById('form-cadastro').classList.add('hidden');
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-cadastro').classList.remove('hidden');
+                event.target.classList.add('active');
+            }
+        };
+
+        window.fazerLogin = async () => {
+            const user = document.getElementById("log-user").value.trim();
+            const pass = document.getElementById("log-pass").value.trim();
+            const btn = document.getElementById("btn-login-acao");
+            const erro = document.getElementById("erro-login");
+
+            if(!user || !pass) return;
+            
+            btn.innerText = "Carregando...";
+            btn.disabled = true;
+
+            try {
+                const q = query(collection(db, "usuarios"), where("username", "==", user));
+                const snap = await getDocs(q);
+
+                if(snap.empty) {
+                    erro.innerText = "Usuário não encontrado.";
+                    erro.style.display = "block";
+                } else {
+                    const dados = snap.docs[0].data();
+                    if(dados.senha === pass) {
+                        // SALVA NO NAVEGADOR E VAI PRO SITE
+                        const sessao = { id: snap.docs[0].id, ...dados };
+                        localStorage.setItem("usuarioEbook", JSON.stringify(sessao));
+                        window.location.href = "index.html"; 
+                    } else {
+                        erro.innerText = "Senha incorreta.";
+                        erro.style.display = "block";
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Erro de conexão. Verifique se o link está autorizado no Firebase.");
+            }
+            btn.innerText = "ENTRAR";
+            btn.disabled = false;
+        };
+
+        window.registrar = async () => {
+            const user = document.getElementById("reg-user").value.trim();
+            const pass = document.getElementById("reg-pass").value.trim();
+            const btn = document.getElementById("btn-reg-acao");
+            const erro = document.getElementById("erro-reg");
+
+            if(!user || !pass) { alert("Preencha tudo!"); return; }
+
+            btn.innerText = "Criando...";
+            btn.disabled = true;
+
+            // Verifica se ja existe
+            const q = query(collection(db, "usuarios"), where("username", "==", user));
+            const snap = await getDocs(q);
+
+            if(!snap.empty) {
+                erro.innerText = "Este usuário já existe.";
+                erro.style.display = "block";
+                btn.innerText = "CRIAR CONTA";
+                btn.disabled = false;
+                return;
+            }
+
+            // O Pulo do Gato: Se for Bolacha, vira CEO
+            let cargo = "Leitor";
+            if(user.toLowerCase() === "bolacha") cargo = "CEO";
+
+            try {
+                const novoUser = { username: user, senha: pass, saldo: 0, cargo: cargo, criadoEm: new Date() };
+                const docRef = await addDoc(collection(db, "usuarios"), novoUser);
+                
+                // Salva e entra
+                const sessao = { id: docRef.id, ...novoUser };
+                localStorage.setItem("usuarioEbook", JSON.stringify(sessao));
+                alert("Conta criada com sucesso!");
+                window.location.href = "index.html";
+            } catch(e) {
+                alert("Erro ao criar conta.");
+            }
+        };
+    </script>
+</body>
+</html>
