@@ -3,137 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EbookLandia - Marketplace</title>
-    
+    <title>EbookLandia - Versão Final</title>
     <style>
-        /* --- CSS GERAL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f4f7f6; color: #333; overflow-x: hidden; padding-top: 80px; }
-
-        /* HEADER */
-        header { background: #2d3436; color: white; padding: 1rem 5%; position: fixed; top: 0; width: 100%; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        nav { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.5rem; font-weight: bold; }
-        .logo span { color: #00cec9; }
-        .user-controls { display: flex; gap: 15px; align-items: center; }
-        .btn-sair { background: #d63031; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-
-        /* SALDO FLUTUANTE */
-        .saldo-container { position: fixed; top: 90px; right: 20px; z-index: 998; }
-        .saldo-card { background: white; padding: 10px 15px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; border: 2px solid #6c5ce7; }
-        .saldo-card .valor { font-weight: bold; color: #2d3436; font-size: 1.1rem; }
-        .btn-add { background: #00cec9; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
         
-        /* ADM */
-        .adm-bar { background: #ff7675; color: white; padding: 10px 5%; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d63031; }
-        
-        /* VITRINE */
-        .hero { text-align: center; padding: 40px 20px; background: #fff; margin-bottom: 20px; }
-        .vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 0 5% 40px; }
-        .card-ebook { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: relative; transition: transform 0.2s; }
-        .card-ebook:hover { transform: translateY(-5px); }
-        .card-ebook img { width: 100%; height: 220px; object-fit: cover; border-radius: 5px; }
-        .btn-comprar { background: #2d3436; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
-        .btn-comprar:hover { background: #00cec9; }
+        /* HEADER FIXO */
+        header { 
+            background: #2d3436; color: white; padding: 0 5%; 
+            position: fixed; top: 0; width: 100%; height: 70px;
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+        }
 
-        /* SISTEMA DE PAGAMENTO (Visual) */
-        .pagamento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .metodo-pag { border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; }
-        .metodo-pag.selected { border-color: #00cec9; background: #e0f7fa; }
-        .qr-fake { width: 150px; height: 150px; background: #eee; margin: 10px auto; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999; border: 2px dashed #ccc; }
+        body { background-color: #f0f2f5; padding-top: 130px; }
 
-        /* MODAIS */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(2px); }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 450px; border-radius: 12px; position: relative; animation: slideDown 0.3s; }
-        @keyframes slideDown { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+        .wallet-display { 
+            background: #00cec9; color: #2d3436; padding: 8px 15px; 
+            border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* PAINEL DE FERRAMENTAS (CEO/MODERADOR) */
+        .adm-bar { 
+            position: fixed; top: 70px; left: 0; width: 100%; 
+            background: #dfe6e9; padding: 10px 5%; z-index: 999; 
+            display: none; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #b2bec3;
+        }
+
+        /* GRID DE LIVROS */
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 280px; object-fit: cover; cursor: pointer; }
+        .card-body { padding: 15px; text-align: center; }
+
+        /* EDITOR E MODAIS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 600px; margin: 50px auto; padding: 25px; border-radius: 10px; position: relative; }
+        .editor-area { background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-top: 10px; }
+        #preview-desc { min-height: 80px; border: 1px dashed #ccc; padding: 10px; margin-top: 10px; background: white; }
+
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-pay { background: #27ae60; color: white; width: 100%; }
+        .btn-adm { background: #0984e3; color: white; margin-left: 5px; }
         
-        .btn-confirmar { background: #27ae60; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-        .btn-fechar { background: #ff7675; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; margin-top: 5px; cursor: pointer; }
-        
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        /* PIX */
+        .pix-box { text-align: center; border: 2px solid #00cec9; padding: 15px; border-radius: 10px; margin-top: 10px; }
+        .qr-img { width: 200px; height: 200px; margin: 10px auto; }
     </style>
 </head>
 <body>
 
     <header>
-        <nav>
-            <div class="logo">Ebook<span>Landia</span></div>
-            <div class="user-controls">
-                <div style="font-size: 0.9rem;">Olá, <span id="display-username" style="font-weight:bold;">...</span></div>
-                <button class="btn-sair" onclick="sair()">Sair</button>
+        <div style="font-size: 1.5rem; font-weight: bold;">Ebook<span style="color:#00cec9">Landia</span></div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="wallet-display">
+                R$ <span id="user-saldo">0.00</span>
+                <button onclick="abrirModal('modal-recarga')" style="border:none; border-radius:50%; width:22px; cursor:pointer;">+</button>
             </div>
-        </nav>
+            <button onclick="sair()" style="background:none; border:1px solid white; color:white; padding:5px; cursor:pointer;">Sair</button>
+        </div>
     </header>
 
-    <div class="saldo-container">
-        <div class="saldo-card">
-            <span class="label">Carteira:</span>
-            <span class="valor">R$ <span id="user-saldo">0.00</span></span>
-            <button class="btn-add" onclick="abrirModal('modal-pagamento')" title="Adicionar Saldo">+</button>
-        </div>
-    </div>
-
-    <div id="painel-adm" class="adm-bar" style="display: none;">
-        <span>👑 Painel do CEO</span>
+    <div id="painel-ferramentas" class="adm-bar">
+        <span id="txt-cargo" style="font-weight:bold; color:#2d3436;">Painel de Controle</span>
         <div>
-            <button onclick="abrirModal('modal-vender')" style="background:white; color:#d63031; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">+ Cadastrar Livro</button>
-            <button onclick="zerarBanco()" style="background:#2d3436; color:white; border:none; padding:5px 10px; cursor:pointer; margin-left:5px; border-radius:3px;">Resetar Sistema</button>
+            <button class="btn btn-adm" style="background:#27ae60" onclick="validarPagamentoPix()">✅ Validar Pix (Moderador)</button>
+            <button id="btn-novo-livro" class="btn btn-adm" onclick="abrirModal('modal-vender')">+ Novo Livro</button>
+            <button id="btn-promover" class="btn btn-adm" onclick="promoverModerador()">+ Contratar Moderador</button>
         </div>
     </div>
 
-    <div class="hero">
-        <h2>Marketplace de Ebooks</h2>
-        <p>Compre, leia e venda. Simples assim.</p>
+    <div class="container">
+        <div class="grid" id="vitrine"></div>
     </div>
 
-    <main>
-        <div class="vitrine" id="vitrine">
-            <p style="text-align:center; width:100%; color:#666;">Carregando livros...</p>
-        </div>
-    </main>
-
-    <div id="modal-pagamento" class="modal">
+    <div id="modal-recarga" class="modal">
         <div class="modal-content">
-            <h3>💰 Adicionar Saldo</h3>
-            <p>Escolha o método de pagamento:</p>
-            <div class="pagamento-grid">
-                <div class="metodo-pag selected" onclick="selecionarMetodo(this, 'pix')">Pix (Instantâneo)</div>
-                <div class="metodo-pag" onclick="selecionarMetodo(this, 'card')">Cartão de Crédito</div>
+            <h3>Recarregar Saldo</h3>
+            <input type="number" id="valor-pix" placeholder="Quanto deseja recarregar? R$" style="width:100%; padding:10px; margin:15px 0;">
+            <button class="btn btn-pay" onclick="gerarQR()">Gerar QR Code Pix</button>
+            
+            <div id="pix-area" style="display:none;" class="pix-box">
+                <img id="qr-display" class="qr-img" src="">
+                <p>Chave: <b>bruh100br@gmail.com</b></p>
+                <p style="font-size: 0.8rem; color: #666; margin-top:5px;">Pague e envie o print para o Moderador!</p>
             </div>
-            <div id="area-pix" style="text-align:center; margin-top:15px;">
-                <p>Escaneie o QR Code:</p>
-                <div class="qr-fake">QR CODE FICTÍCIO</div>
-                <p style="font-size:0.8rem; color:#00cec9;">Copiar Chave Pix Aleatória</p>
-            </div>
-            <div id="area-card" style="display:none; margin-top:15px;">
-                <input type="text" placeholder="Número do Cartão">
-                <div style="display:flex; gap:5px;">
-                    <input type="text" placeholder="MM/AA">
-                    <input type="text" placeholder="CVV">
-                </div>
-            </div>
-            <hr style="margin:15px 0;">
-            <label>Valor da Recarga (R$):</label>
-            <input type="number" id="valor-recarga" placeholder="0.00">
-            <button class="btn-confirmar" onclick="processarPagamento()">PAGAR AGORA</button>
-            <button class="btn-fechar" onclick="fecharModal('modal-pagamento')">Cancelar</button>
+            <button class="btn" style="width:100%; margin-top:10px;" onclick="fecharModal('modal-recarga')">Fechar</button>
         </div>
     </div>
 
     <div id="modal-vender" class="modal">
         <div class="modal-content">
-            <h3>Novo Livro</h3>
-            <input type="text" id="titulo-livro" placeholder="Título do Livro">
-            <input type="number" id="preco-livro" placeholder="Preço (R$)">
-            <input type="text" id="capa-livro" placeholder="URL da Capa (Imagem)">
-            <button class="btn-confirmar" onclick="salvarLivro()">Cadastrar</button>
-            <button class="btn-fechar" onclick="fecharModal('modal-vender')">Fechar</button>
+            <h3>Configurar Ebook</h3>
+            <input type="text" id="v-titulo" placeholder="Título do Livro" style="width:100%; padding:10px; margin:5px 0;">
+            <input type="number" id="v-preco" placeholder="Preço R$" style="width:100%; padding:10px; margin:5px 0;">
+            <input type="text" id="v-capa" placeholder="Link da Capa (Imagem)" style="width:100%; padding:10px; margin:5px 0;">
+            
+            <div class="editor-area">
+                <p><b>Descrição/Conteúdo (HTML Liberado):</b></p>
+                <textarea id="v-desc" oninput="updatePreview()" placeholder="Ex: <h1 style='color:red'>Destaque</h1>" style="width:100%; height:80px;"></textarea>
+                <div id="preview-desc"></div>
+            </div>
+            <br>
+            <button class="btn btn-pay" onclick="salvarLivro()">Publicar</button>
+            <button class="btn" style="width:100%; margin-top:5px;" onclick="fecharModal('modal-vender')">Cancelar</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDB9azJhGclPOlfT249fcLWiztUSt88GY8",
@@ -147,164 +127,98 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- VERIFICAÇÃO DE SEGURANÇA (O PULO DO GATO) ---
-        let usuarioLogado = null;
-        
-        try {
-            const dadosSalvos = localStorage.getItem("usuarioEbook");
-            if(!dadosSalvos) {
-                window.location.href = "login.html"; // Manda pro login se não tiver dados
-            } else {
-                usuarioLogado = JSON.parse(dadosSalvos);
-                inicializarSistema();
-            }
-        } catch(e) {
-            window.location.href = "login.html";
-        }
+        let user = JSON.parse(localStorage.getItem("usuarioEbook"));
+        if(!user) window.location.href = "login.html";
 
-        async function inicializarSistema() {
-            // Atualiza dados frescos do banco
-            try {
-                const userRef = doc(db, "usuarios", usuarioLogado.id);
-                const userSnap = await getDoc(userRef);
-                if(userSnap.exists()) {
-                    usuarioLogado = { id: userSnap.id, ...userSnap.data() };
-                    // Atualiza localStorage
-                    localStorage.setItem("usuarioEbook", JSON.stringify(usuarioLogado));
-                }
-            } catch(e) { console.log("Usando cache local"); }
-
-            document.getElementById("display-username").innerText = usuarioLogado.username;
-            atualizarSaldoTela();
-            verificarPermissoes();
-            carregarLivros();
-        }
-
-        // --- FUNÇÕES GLOBAIS ---
-        window.sair = () => {
-            localStorage.removeItem("usuarioEbook");
-            window.location.href = "login.html";
-        }
-
-        window.abrirModal = (id) => { document.getElementById(id).style.display = "block"; }
-        window.fecharModal = (id) => { document.getElementById(id).style.display = "none"; }
-
-        window.selecionarMetodo = (elem, tipo) => {
-            document.querySelectorAll('.metodo-pag').forEach(d => d.classList.remove('selected'));
-            elem.classList.add('selected');
-            if(tipo === 'pix') {
-                document.getElementById('area-pix').style.display = 'block';
-                document.getElementById('area-card').style.display = 'none';
-            } else {
-                document.getElementById('area-pix').style.display = 'none';
-                document.getElementById('area-card').style.display = 'block';
-            }
-        }
-
-        function atualizarSaldoTela() {
-            document.getElementById("user-saldo").innerText = usuarioLogado.saldo.toFixed(2);
-        }
-
-        window.processarPagamento = async () => {
-            const valor = parseFloat(document.getElementById("valor-recarga").value);
-            if(valor > 0) {
-                const btn = document.querySelector("#modal-pagamento .btn-confirmar");
-                btn.innerText = "Processando...";
+        async function init() {
+            const snap = await getDoc(doc(db, "usuarios", user.id));
+            if(snap.exists()) {
+                user = { id: snap.id, ...snap.data() };
+                document.getElementById("user-saldo").innerText = user.saldo.toFixed(2);
                 
-                setTimeout(async () => {
-                    const novoSaldo = usuarioLogado.saldo + valor;
-                    await updateDoc(doc(db, "usuarios", usuarioLogado.id), { saldo: novoSaldo });
-                    usuarioLogado.saldo = novoSaldo;
-                    localStorage.setItem("usuarioEbook", JSON.stringify(usuarioLogado));
-                    atualizarSaldoTela();
-                    
-                    alert("✅ Pagamento Aprovado!");
-                    btn.innerText = "PAGAR AGORA";
-                    window.fecharModal("modal-pagamento");
-                }, 1500);
-            } else {
-                alert("Valor inválido.");
+                // Configura interface
+                if(user.cargo === "CEO" || user.cargo === "Moderador") {
+                    document.getElementById("painel-ferramentas").style.display = "flex";
+                    document.getElementById("txt-cargo").innerText = user.cargo === "CEO" ? "👑 Painel CEO" : "🛠️ Painel Moderador";
+                    if(user.cargo === "Moderador") {
+                        document.getElementById("btn-novo-livro").style.display = "none";
+                        document.getElementById("btn-promover").style.display = "none";
+                    }
+                }
+            }
+            carregarVitrine();
+        }
+
+        window.gerarQR = () => {
+            const v = document.getElementById("valor-pix").value;
+            if(v > 0) {
+                const link = `https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=00020126360014BR.GOV.BCB.PIX0114bruh100br@gmail.com520400005303986540${v}5802BR5913EbookLandia6009SAO_PAULO62070503***6304`;
+                document.getElementById("qr-display").src = link;
+                document.getElementById("pix-area").style.display = "block";
             }
         }
 
-        async function carregarLivros() {
-            const vitrine = document.getElementById("vitrine");
-            
-            const snapshot = await getDocs(collection(db, "livros"));
-            vitrine.innerHTML = "";
+        window.updatePreview = () => {
+            document.getElementById("preview-desc").innerHTML = document.getElementById("v-desc").value;
+        }
 
-            if(snapshot.empty) {
-                vitrine.innerHTML = "<p>Nenhum livro à venda.</p>";
-                return;
+        window.validarPagamentoPix = async () => {
+            const cliente = prompt("Nome do usuário:");
+            const valor = parseFloat(prompt("Valor a liberar (R$):"));
+            if(cliente && valor > 0) {
+                const q = query(collection(db, "usuarios"), where("username", "==", cliente));
+                const snap = await getDocs(q);
+                if(!snap.empty) {
+                    const ref = doc(db, "usuarios", snap.docs[0].id);
+                    await updateDoc(ref, { saldo: (snap.docs[0].data().saldo || 0) + valor });
+                    alert("Saldo liberado!");
+                }
             }
+        }
 
-            snapshot.forEach(docLivro => {
-                const livro = docLivro.data();
-                const div = document.createElement("div");
-                div.className = "card-ebook";
-                div.innerHTML = `
-                    <img src="${livro.capa}" onerror="this.src='https://via.placeholder.com/200?text=Capa+Indisponivel'">
-                    <h3>${livro.titulo}</h3>
-                    <p>R$ ${livro.preco}</p>
-                    <button class="btn-comprar" onclick="comprarLivro('${docLivro.id}', ${livro.preco}, '${livro.titulo}')">Comprar</button>
-                    ${usuarioLogado.cargo === 'CEO' ? `<button onclick="deletarLivro('${docLivro.id}')" style="color:red; background:none; border:none; cursor:pointer; font-size:0.8rem; margin-top:5px;">[X] Remover</button>` : ''}
-                `;
-                vitrine.appendChild(div);
+        window.promoverModerador = async () => {
+            const n = prompt("Nome do novo Moderador:");
+            if(n) {
+                const q = query(collection(db, "usuarios"), where("username", "==", n));
+                const snap = await getDocs(q);
+                if(!snap.empty) await updateDoc(doc(db, "usuarios", snap.docs[0].id), { cargo: "Moderador" });
+            }
+        }
+
+        window.carregarVitrine = async () => {
+            const grid = document.getElementById("vitrine");
+            const snap = await getDocs(collection(db, "livros"));
+            grid.innerHTML = "";
+            snap.forEach(d => {
+                const l = d.data();
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${l.capa}">
+                        <div class="card-body">
+                            <h3>${l.titulo}</h3>
+                            <p style="color:green; font-weight:bold;">R$ ${l.preco.toFixed(2)}</p>
+                            <button class="btn btn-pay" style="margin-top:10px;" onclick="alert('Funcionalidade de compra ativada!')">Comprar</button>
+                        </div>
+                    </div>`;
             });
         }
 
         window.salvarLivro = async () => {
-            const titulo = document.getElementById("titulo-livro").value;
-            const preco = parseFloat(document.getElementById("preco-livro").value);
-            const capa = document.getElementById("capa-livro").value;
-
-            if(titulo && preco) {
-                await addDoc(collection(db, "livros"), {
-                    titulo: titulo, preco: preco, capa: capa || "https://via.placeholder.com/200"
-                });
-                alert("Livro cadastrado!");
-                window.fecharModal("modal-vender");
-                carregarLivros();
-            } else { alert("Preencha os dados."); }
+            await addDoc(collection(db, "livros"), {
+                titulo: document.getElementById("v-titulo").value,
+                preco: parseFloat(document.getElementById("v-preco").value),
+                capa: document.getElementById("v-capa").value,
+                descricao: document.getElementById("v-desc").value
+            });
+            fecharModal('modal-vender');
+            carregarVitrine();
         }
 
-        window.comprarLivro = async (id, preco, titulo) => {
-            if(usuarioLogado.saldo >= preco) {
-                if(confirm(`Comprar "${titulo}" por R$ ${preco}?`)) {
-                    const novoSaldo = usuarioLogado.saldo - preco;
-                    await updateDoc(doc(db, "usuarios", usuarioLogado.id), { saldo: novoSaldo });
-                    usuarioLogado.saldo = novoSaldo;
-                    localStorage.setItem("usuarioEbook", JSON.stringify(usuarioLogado));
-                    atualizarSaldoTela();
-                    alert(`Compra realizada com sucesso!`);
-                }
-            } else {
-                alert("Saldo insuficiente!");
-                window.abrirModal("modal-pagamento");
-            }
-        }
+        window.abrirModal = (id) => document.getElementById(id).style.display = "block";
+        window.fecharModal = (id) => document.getElementById(id).style.display = "none";
+        window.sair = () => { localStorage.removeItem("usuarioEbook"); window.location.href = "login.html"; }
 
-        function verificarPermissoes() {
-            if(usuarioLogado.cargo === "CEO") {
-                document.getElementById("painel-adm").style.display = "flex";
-            }
-        }
-
-        window.deletarLivro = async (id) => {
-            if(confirm("Apagar livro?")) {
-                await deleteDoc(doc(db, "livros", id));
-                carregarLivros();
-            }
-        }
-
-        window.zerarBanco = async () => {
-            if(prompt("Digite DELETAR para confirmar:") === "DELETAR") {
-                const snapshot = await getDocs(collection(db, "livros"));
-                snapshot.forEach(async (doc) => { await deleteDoc(doc.ref); });
-                alert("Site resetado.");
-                carregarLivros();
-            }
-        }
+        init();
     </script>
 </body>
 </html>
