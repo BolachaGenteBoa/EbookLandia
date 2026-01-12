@@ -3,335 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EbookLandia - Marketplace Completo</title>
+    <title>EbookLandia - Login</title>
     
     <style>
-        /* --- CSS INTEGRADO --- */
+        /* --- CSS GERAL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f4f7f6; color: #333; padding-top: 80px; }
+        body { background-color: #f4f7f6; color: #333; overflow-x: hidden; }
 
-        header { background: #2d3436; color: white; padding: 1rem 5%; }
+        /* --- TELA DE LOGIN --- */
+        #tela-login {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 400px;
+        }
+        .login-card h2 { margin-bottom: 20px; color: #2d3436; }
+        .login-card input {
+            width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #dfe6e9;
+            border-radius: 8px; font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        .login-card input:focus { border-color: #6c5ce7; }
+        .btn-entrar {
+            width: 100%; padding: 15px; background: #00cec9; color: white; border: none;
+            border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-entrar:hover { background: #00b894; transform: scale(1.02); }
+
+        /* --- APLICAÇÃO PRINCIPAL (Escondida no inicio) --- */
+        #app-principal { display: none; padding-top: 80px; }
+
+        /* HEADER */
+        header { background: #2d3436; color: white; padding: 1rem 5%; position: fixed; top: 0; width: 100%; z-index: 100; }
         nav { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.5rem; font-weight: bold; }
         .logo span { color: #00cec9; }
-        nav ul { list-style: none; display: flex; gap: 20px; }
-        .btn-vender { background: #00cec9; padding: 10px 20px; border-radius: 5px; text-decoration: none; color: #2d3436; font-weight: bold; }
+        .user-info { font-size: 0.9rem; color: #dfe6e9; }
 
-        .saldo-container { position: fixed; top: 20px; right: 20px; z-index: 999; }
+        /* SALDO FLUTUANTE */
+        .saldo-container { position: fixed; top: 90px; right: 20px; z-index: 998; }
         .saldo-card { background: white; padding: 10px 15px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; border: 2px solid #6c5ce7; }
         .saldo-card .valor { font-weight: bold; color: #2d3436; font-size: 1.1rem; }
-        .btn-add-saldo { background: #00cec9; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-resgatar { background: #f1c40f; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
-
-        .adm-bar { background: #ff7675; color: white; padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; border-bottom: 2px solid #d63031; }
-        .adm-menu button { background: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-weight: bold; color: #d63031; margin-left: 5px; }
-        .contador-area { background: #636e72; color: white; padding: 20px 5%; margin-top: 10px; border-left: 5px solid #fdcb6e; }
-        .badge { background: #d63031; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .item-pagamento { background: #fff; color: #333; padding: 10px; margin-top: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-
-        .hero { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; margin-bottom: 20px; }
-        .busca-container { padding: 0 5%; display: flex; justify-content: center; margin-bottom: 20px; }
-        #input-busca { width: 100%; max-width: 600px; padding: 15px 25px; border: 2px solid #6c5ce7; border-radius: 30px; font-size: 1rem; outline: none; }
-        main { padding: 0 5% 40px; }
-        .vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-
-        .card-ebook { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; transition: transform 0.3s; position: relative; }
+        .btn-add { background: #00cec9; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        
+        /* ADM */
+        .adm-bar { background: #ff7675; color: white; padding: 10px 5%; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d63031; }
+        
+        /* VITRINE */
+        .hero { text-align: center; padding: 40px 20px; background: #fff; margin-bottom: 20px; }
+        .vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 0 5% 40px; }
+        .card-ebook { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: relative; transition: transform 0.2s; }
         .card-ebook:hover { transform: translateY(-5px); }
-        .card-ebook img { width: 100%; height: 250px; object-fit: cover; border-radius: 5px; }
-        .card-ebook h3 { margin: 10px 0; font-size: 1.1rem; }
-        .btn-comprar { background: #2d3436; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-top: 5px; }
+        .card-ebook img { width: 100%; height: 220px; object-fit: cover; border-radius: 5px; }
+        .btn-comprar { background: #2d3436; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; }
+        .btn-comprar:hover { background: #00cec9; }
 
-        .estrelas { color: #f1c40f; margin: 5px 0; font-size: 1rem; }
-        .comentarios-secao { margin-top: 10px; text-align: left; font-size: 0.8rem; border-top: 1px solid #eee; padding-top: 5px; max-height: 80px; overflow-y: auto; }
-        .comentario-item { background: #f9f9f9; padding: 3px; border-radius: 3px; margin-bottom: 3px; }
+        /* SISTEMA DE PAGAMENTO (Visual) */
+        .pagamento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .metodo-pag { border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; }
+        .metodo-pag.selected { border-color: #00cec9; background: #e0f7fa; }
+        .qr-fake { width: 150px; height: 150px; background: #eee; margin: 10px auto; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999; border: 2px dashed #ccc; }
 
-        .preferencia { border: 3px solid #f1c40f !important; background: #fff9e6; }
-        .preferencia::before { content: "🔥 DESTAQUE"; position: absolute; top: -10px; left: 10px; background: #f1c40f; font-size: 10px; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
-        .preco-antigo { text-decoration: line-through; color: #999; font-size: 0.8rem; margin-right: 5px; }
-
-        .sessao-venda { background: #dfe6e9; padding: 50px 5%; text-align: center; }
-        #form-ebook { max-width: 400px; margin: 20px auto; display: flex; flex-direction: column; gap: 10px; }
-        #form-ebook input { padding: 12px; border: 1px solid #ccc; border-radius: 5px; }
-        #form-ebook button { background: #6c5ce7; color: white; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 500px; border-radius: 10px; position: relative; }
-        .opcoes-recarga { display: flex; gap: 10px; margin-bottom: 10px; }
-        .opcoes-recarga button { flex: 1; padding: 10px; background: #fff; border: 1px solid #6c5ce7; border-radius: 5px; cursor: pointer; }
-        .aviso-vermelho { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 10px; border-radius: 5px; font-size: 0.85rem; margin-bottom: 15px; font-weight: bold; }
-        .btn-confirmar { background: #00cec9; border: none; padding: 10px; border-radius: 5px; cursor: pointer; color: white; width: 100%; font-weight: bold; margin-top: 5px; }
-        .btn-fechar-modal { background: #ccc; border: none; padding: 10px; width: 100%; margin-top: 5px; cursor: pointer; border-radius: 5px; }
-        .rating-input { font-size: 2rem; cursor: pointer; color: #ccc; text-align: center; }
-        .rating-input span:hover, .rating-input span.active { color: #f1c40f; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+        /* MODAIS */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 450px; border-radius: 12px; position: relative; animation: slideDown 0.3s; }
+        @keyframes slideDown { from {transform: translateY(-50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+        
+        .btn-confirmar { background: #27ae60; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-fechar { background: #ff7675; color: white; width: 100%; padding: 10px; border: none; border-radius: 5px; margin-top: 5px; cursor: pointer; }
+        
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .aviso-vermelho { color: #c0392b; background: #ffcccc; padding: 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="saldo-container">
-        <div class="saldo-card">
-            <span class="label">Meu Saldo:</span>
-            <span class="valor">R$ <span id="user-saldo">0.00</span></span>
-            <button class="btn-add-saldo" id="btn-abrir-recarga" title="Recarregar">+</button>
-            <button class="btn-resgatar" id="btn-abrir-resgate">Resgatar</button>
+    <div id="tela-login">
+        <div class="login-card">
+            <h1>EbookLandia 📚</h1>
+            <p>Faça login para acessar sua biblioteca.</p>
+            <br>
+            <input type="text" id="login-user" placeholder="Nome de Usuário (Ex: Bolacha)">
+            <input type="password" id="login-pass" placeholder="Senha (Qualquer uma)">
+            <button class="btn-entrar" id="btn-entrar-sistema">ENTRAR NO SISTEMA</button>
+            <p style="font-size:0.8rem; margin-top:10px; color:#666;">*Se não tiver conta, ela será criada automaticamente.</p>
         </div>
     </div>
 
-    <header>
-        <nav>
-            <div class="logo">Ebook<span>Landia</span></div>
-            <ul>
-                <li><a href="#">Comprar</a></li>
-                <li><a href="#vender" class="btn-vender">Quero Vender (Ganhe 80%)</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="app-principal">
+        
+        <header>
+            <nav>
+                <div class="logo">Ebook<span>Landia</span></div>
+                <div class="user-info">Olá, <span id="display-username">Visitante</span></div>
+            </nav>
+        </header>
 
-    <div id="painel-adm" class="adm-bar" style="display: none;">
-        <div class="adm-info">
-            <strong>Área do Dono/Staff</strong> | Lucro da Casa (20%): R$ <span id="lucro-total">...</span>
+        <div class="saldo-container">
+            <div class="saldo-card">
+                <span class="label">Carteira:</span>
+                <span class="valor">R$ <span id="user-saldo">0.00</span></span>
+                <button class="btn-add" onclick="abrirModal('modal-pagamento')" title="Adicionar Saldo">+</button>
+            </div>
         </div>
-        <div class="adm-menu">
-            <button id="btn-gerenciar-equipe">Gerenciar Equipe</button>
-            <button id="btn-promocoes">Promoções/Destaques</button>
+
+        <div id="painel-adm" class="adm-bar" style="display: none;">
+            <span>👑 Painel do CEO</span>
+            <div>
+                <button onclick="abrirModal('modal-vender')" style="background:white; color:#d63031; border:none; padding:5px 10px; cursor:pointer; font-weight:bold; border-radius:3px;">+ Cadastrar Livro</button>
+                <button onclick="zerarBanco()" style="background:#2d3436; color:white; border:none; padding:5px 10px; cursor:pointer; margin-left:5px; border-radius:3px;">Resetar Sistema</button>
+            </div>
         </div>
+
+        <div class="hero">
+            <h2>Marketplace de Ebooks</h2>
+            <p>Compre, leia e venda. Simples assim.</p>
+        </div>
+
+        <main>
+            <div class="vitrine" id="vitrine">
+                <p style="text-align:center; width:100%; color:#666;">Carregando livros...</p>
+            </div>
+        </main>
+
+        <div id="modal-pagamento" class="modal">
+            <div class="modal-content">
+                <h3>💰 Adicionar Saldo</h3>
+                <p>Escolha o método de pagamento:</p>
+                
+                <div class="pagamento-grid">
+                    <div class="metodo-pag selected" onclick="selecionarMetodo(this, 'pix')">Pix (Instantâneo)</div>
+                    <div class="metodo-pag" onclick="selecionarMetodo(this, 'card')">Cartão de Crédito</div>
+                </div>
+
+                <div id="area-pix" style="text-align:center; margin-top:15px;">
+                    <p>Escaneie o QR Code:</p>
+                    <div class="qr-fake">QR CODE FICTÍCIO</div>
+                    <p style="font-size:0.8rem; color:#00cec9;">Copiar Chave Pix Aleatória</p>
+                </div>
+
+                <div id="area-card" style="display:none; margin-top:15px;">
+                    <input type="text" placeholder="Número do Cartão">
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" placeholder="MM/AA">
+                        <input type="text" placeholder="CVV">
+                    </div>
+                </div>
+
+                <hr style="margin:15px 0;">
+                <label>Valor da Recarga (R$):</label>
+                <input type="number" id="valor-recarga" placeholder="0.00">
+                <button class="btn-confirmar" onclick="processarPagamento()">PAGAR AGORA</button>
+                <button class="btn-fechar" onclick="fecharModal('modal-pagamento')">Cancelar</button>
+            </div>
+        </div>
+
+        <div id="modal-vender" class="modal">
+            <div class="modal-content">
+                <h3>Novo Livro</h3>
+                <input type="text" id="titulo-livro" placeholder="Título do Livro">
+                <input type="number" id="preco-livro" placeholder="Preço (R$)">
+                <input type="text" id="capa-livro" placeholder="URL da Capa (Imagem)">
+                <button class="btn-confirmar" onclick="salvarLivro()">Cadastrar</button>
+                <button class="btn-fechar" onclick="fecharModal('modal-vender')">Fechar</button>
+            </div>
+        </div>
+
     </div>
-
-    <div id="painel-contador" class="contador-area" style="display: none;">
-        <h3>📊 Painel do Contador</h3>
-        <p>Solicitações pendentes: <span id="notif-pagamentos" class="badge">0</span></p>
-        <div id="lista-pagamentos"></div>
-    </div>
-
-    <section class="hero">
-        <h1>Sua próxima aventura começa por apenas R$ 1,00</h1>
-        <p>A plataforma onde autores independentes brilham.</p>
-    </section>
-
-    <section class="busca-container">
-        <input type="text" id="input-busca" placeholder="🔍 Pesquisar por título do livro...">
-    </section>
-
-    <main>
-        <h2>Livros em Destaque</h2>
-        <div class="vitrine" id="vitrine">
-            <p style="text-align:center">Carregando Firebase...</p>
-        </div>
-    </main>
-
-    <section id="vender" class="sessao-venda">
-        <h2>Cadastre seu eBook</h2>
-        <form id="form-ebook">
-            <input type="text" id="titulo" placeholder="Título" required>
-            <input type="number" id="preco" placeholder="Preço" step="0.01" required>
-            <input type="text" id="capa" placeholder="URL da Capa" required>
-            <button type="submit">Colocar na Estante</button>
-        </form>
-    </section>
-
-    <div id="modal-recarga" class="modal"><div class="modal-content"><h3>Recarregar</h3><div class="opcoes-recarga"><button class="btn-recarga-rapida" data-valor="5">+ R$ 5</button><button class="btn-recarga-rapida" data-valor="10">+ R$ 10</button></div><input type="number" id="valor-custom" placeholder="Outro valor"><button id="btn-confirmar-recarga" class="btn-confirmar">Confirmar</button><button class="btn-fechar-modal">Fechar</button></div></div>
-    <div id="modal-pix" class="modal"><div class="modal-content"><h3>Cadastrar Pix</h3><input type="text" id="chave-pix-input" placeholder="Chave Pix"><button id="btn-salvar-pix" class="btn-confirmar">Salvar</button><button class="btn-fechar-modal">Cancelar</button></div></div>
-    <div id="modal-resgate" class="modal"><div class="modal-content"><h3>Resgate</h3><p class="aviso-vermelho">⚠️ Sem reembolso. Prazo: 1-2 dias.</p><p>Saldo: R$ <span id="saldo-resgate-display">0.00</span></p><input type="number" id="valor-resgate-input" placeholder="Valor"><button id="btn-confirmar-resgate" class="btn-confirmar">Confirmar</button><button class="btn-fechar-modal">Cancelar</button></div></div>
-    <div id="modal-equipe" class="modal"><div class="modal-content"><h3>Equipe</h3><table><thead><tr><th>Cargo</th><th>IP</th><th>Ação</th></tr></thead><tbody id="lista-equipe"></tbody></table><hr><h4>Novo Adm</h4><input type="text" id="novo-ip" placeholder="IP"><input type="text" id="novo-cargo" placeholder="Cargo"><button id="btn-add-adm" class="btn-confirmar">Adicionar</button><button class="btn-fechar-modal">Fechar</button></div></div>
-    <div id="modal-promocao" class="modal"><div class="modal-content"><h3>Destaques</h3><select id="select-livro-promo"></select><input type="number" id="input-desconto" placeholder="% (1-10)"><button id="btn-aplicar-promo" class="btn-confirmar">Aplicar</button><button class="btn-fechar-modal">Fechar</button></div></div>
-    <div id="modal-avaliacao" class="modal"><div class="modal-content"><h3>Avaliar</h3><div class="rating-input" id="estrelas-clicaveis"><span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span></div><input type="text" id="nome-avaliador" placeholder="Seu Nome"><textarea id="texto-avaliacao" placeholder="Comentário..."></textarea><button id="btn-enviar-avaliacao" class="btn-confirmar">Enviar</button><button class="btn-fechar-modal">Fechar</button></div></div>
 
     <script type="module">
+        // Importando Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, setDoc, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+        // CONFIGURAÇÃO DO FIREBASE (NÃO APAGUE)
         const firebaseConfig = {
             apiKey: "AIzaSyDB9azJhGclPOlfT249fcLWiztUSt88GY8",
             authDomain: "ebooklandia-f041a.firebaseapp.com",
             projectId: "ebooklandia-f041a",
             storageBucket: "ebooklandia-f041a.firebasestorage.app",
             messagingSenderId: "385658292639",
-            appId: "1:385658292639:web:3b9255d914c303ff3e95aa",
-            measurementId: "G-TB01J7DLTC"
+            appId: "1:385658292639:web:3b9255d914c303ff3e95aa"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let meuIp = "";
-        let usuarioAtual = null;
-        let livroParaAvaliar = null;
-        let notaAvaliacao = 0;
+        // VARIÁVEIS GLOBAIS
+        let usuarioLogado = null; // Guarda os dados de quem logou
 
-        const $ = (id) => document.getElementById(id);
+        // --- SISTEMA DE LOGIN ---
+        document.getElementById("btn-entrar-sistema").addEventListener("click", async () => {
+            const user = document.getElementById("login-user").value.trim();
+            const pass = document.getElementById("login-pass").value.trim();
 
-        async function iniciar() {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            meuIp = data.ip;
+            if(!user) return alert("Digite um nome de usuário!");
 
-            const q = query(collection(db, "usuarios"), where("ip", "==", meuIp));
-            const snap = await getDocs(q);
+            const btn = document.getElementById("btn-entrar-sistema");
+            btn.innerText = "Verificando...";
+            btn.disabled = true;
 
-            if (snap.empty) {
-                const docRef = await addDoc(collection(db, "usuarios"), { ip: meuIp, saldo: 0, pixKey: "", cargo: "User" });
-                usuarioAtual = { id: docRef.id, ip: meuIp, saldo: 0, pixKey: "", cargo: "User" };
-            } else {
-                usuarioAtual = { id: snap.docs[0].id, ...snap.docs[0].data() };
-                if (meuIp === "170.150.53.139" && usuarioAtual.cargo !== "CEO") {
-                    await updateDoc(doc(db, "usuarios", usuarioAtual.id), { cargo: "CEO" });
-                    usuarioAtual.cargo = "CEO";
+            try {
+                // Procura se usuário já existe
+                const q = query(collection(db, "usuarios"), where("username", "==", user));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    // CRIA NOVO USUÁRIO
+                    let cargoInicial = "Leitor";
+                    if (user.toLowerCase() === "bolacha") cargoInicial = "CEO"; // O Pulo do Gato
+
+                    const novoUser = {
+                        username: user,
+                        saldo: 0,
+                        cargo: cargoInicial,
+                        criadoEm: new Date()
+                    };
+                    const docRef = await addDoc(collection(db, "usuarios"), novoUser);
+                    usuarioLogado = { id: docRef.id, ...novoUser };
+                } else {
+                    // CARREGA USUÁRIO EXISTENTE
+                    const dados = snapshot.docs[0];
+                    usuarioLogado = { id: dados.id, ...dados.data() };
+                    
+                    // Garante que Bolacha é sempre CEO se ele logar
+                    if(user.toLowerCase() === "bolacha" && usuarioLogado.cargo !== "CEO") {
+                        await updateDoc(doc(db, "usuarios", usuarioLogado.id), { cargo: "CEO" });
+                        usuarioLogado.cargo = "CEO";
+                    }
                 }
-            }
-            atualizarSaldoTela();
-            carregarLivros();
-            verificarPermissoes();
-            atualizarLucroDisplay();
-        }
 
-        function atualizarSaldoTela() {
-            $("user-saldo").innerText = usuarioAtual.saldo.toFixed(2);
-            $("saldo-resgate-display").innerText = usuarioAtual.saldo.toFixed(2);
-        }
-
-        async function carregarLivros() {
-            const vitrine = $("vitrine");
-            const snap = await getDocs(collection(db, "livros"));
-            let livros = [];
-            snap.forEach(d => livros.push({id: d.id, ...d.data()}));
-            livros.sort((a,b) => (b.destaque||0) - (a.destaque||0));
-
-            vitrine.innerHTML = "";
-            $("select-livro-promo").innerHTML = "";
-            
-            livros.forEach(l => {
-                const media = l.notas?.length ? (l.notas.reduce((a,b)=>a+b)/l.notas.length).toFixed(1) : 0;
-                const card = document.createElement("div");
-                card.className = `card-ebook ${l.destaque ? 'preferencia' : ''}`;
-                card.innerHTML = `
-                    <img src="${l.capa}">
-                    <div class="estrelas">★ ${media}</div>
-                    <h3>${l.titulo}</h3>
-                    <p>${l.destaque?`<span class="preco-antigo">R$ ${l.precoOriginal}</span>`:''} R$ ${l.precoAtual.toFixed(2)}</p>
-                    <button class="btn-comprar" onclick="comprar('${l.id}', ${l.precoAtual})">Comprar</button>
-                    <button onclick="abrirAval('${l.id}')" style="font-size:0.7rem; cursor:pointer; display:block; margin:auto; background:none; border:none;">Avaliar</button>
-                    <div class="comentarios-secao">${(l.comentarios||[]).slice(-2).map(c=>`<div class="comentario-item">${c}</div>`).join('')}</div>
-                `;
-                vitrine.appendChild(card);
-                $("select-livro-promo").innerHTML += `<option value="${l.id}">${l.titulo}</option>`;
-            });
-        }
-
-        window.comprar = async (id, preco) => {
-            if (usuarioAtual.saldo >= preco) {
-                usuarioAtual.saldo -= preco;
-                await updateDoc(doc(db, "usuarios", usuarioAtual.id), { saldo: usuarioAtual.saldo });
-                await addDoc(collection(db, "vendas"), { livroId: id, valor: preco, lucroAdm: preco*0.2, data: new Date() });
+                // Libera o acesso
+                document.getElementById("tela-login").style.display = "none";
+                document.getElementById("app-principal").style.display = "block";
+                document.getElementById("display-username").innerText = usuarioLogado.username;
                 atualizarSaldoTela();
-                alert("Sucesso!");
-                atualizarLucroDisplay();
-            } else { alert("Sem saldo!"); $("modal-recarga").style.display="block"; }
-        };
+                verificarPermissoes();
+                carregarLivros();
 
-        async function atualizarLucroDisplay() {
-            const snap = await getDocs(collection(db, "vendas"));
-            let total = 0; snap.forEach(d => total += d.data().lucroAdm);
-            $("lucro-total").innerText = total.toFixed(2);
-        }
-
-        $("form-ebook").onsubmit = async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "livros"), { titulo: $("titulo").value, precoOriginal: parseFloat($("preco").value), precoAtual: parseFloat($("preco").value), capa: $("capa").value, destaque: false, notas: [], comentarios: [] });
-            $("form-ebook").reset(); carregarLivros();
-        };
-
-        $("btn-abrir-recarga").onclick = () => $("modal-recarga").style.display="block";
-        $("btn-abrir-resgate").onclick = () => usuarioAtual.pixKey ? $("modal-resgate").style.display="block" : $("modal-pix").style.display="block";
-
-        document.querySelectorAll(".btn-recarga-rapida").forEach(b => b.onclick = () => addSaldo(parseFloat(b.dataset.valor)));
-        $("btn-confirmar-recarga").onclick = () => addSaldo(parseFloat($("valor-custom").value));
-
-        async function addSaldo(v) {
-            usuarioAtual.saldo += v;
-            await updateDoc(doc(db, "usuarios", usuarioAtual.id), { saldo: usuarioAtual.saldo });
-            atualizarSaldoTela(); $("modal-recarga").style.display="none";
-        }
-
-        $("btn-salvar-pix").onclick = async () => {
-            usuarioAtual.pixKey = $("chave-pix-input").value;
-            await updateDoc(doc(db, "usuarios", usuarioAtual.id), { pixKey: usuarioAtual.pixKey });
-            $("modal-pix").style.display="none"; $("modal-resgate").style.display="block";
-        };
-
-        $("btn-confirmar-resgate").onclick = async () => {
-            const v = parseFloat($("valor-resgate-input").value);
-            if(v > 0 && v <= usuarioAtual.saldo) {
-                usuarioAtual.saldo -= v;
-                await updateDoc(doc(db, "usuarios", usuarioAtual.id), { saldo: usuarioAtual.saldo });
-                await addDoc(collection(db, "resgates"), { usuarioId: usuarioAtual.id, valor: v, pix: usuarioAtual.pixKey, status: "Pendente", data: new Date() });
-                atualizarSaldoTela(); $("modal-resgate").style.display="none"; alert("Pendente!");
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao conectar. Verifique se o link deste site está nos 'Authorized Domains' do Firebase.");
+                btn.innerText = "Tentar Novamente";
+                btn.disabled = false;
             }
-        };
-
-        function verificarPermissoes() {
-            if(["CEO", "Contador", "Moderador"].includes(usuarioAtual.cargo)) {
-                $("painel-adm").style.display="flex";
-                if(["CEO", "Contador"].includes(usuarioAtual.cargo)) { $("painel-contador").style.display="block"; monitorarResgates(); }
-            }
-        }
-
-        async function monitorarResgates() {
-            const q = query(collection(db, "resgates"), where("status", "==", "Pendente"));
-            const snap = await getDocs(q);
-            $("notif-pagamentos").innerText = snap.size;
-            $("lista-pagamentos").innerHTML = "";
-            snap.forEach(d => {
-                const p = d.data();
-                const div = document.createElement("div"); div.className="item-pagamento";
-                div.innerHTML = `<span>R$ ${p.valor} -> Pix: ${p.pix}</span><button onclick="pagar('${d.id}')">Pago</button>`;
-                $("lista-pagamentos").appendChild(div);
-            });
-        }
-
-        window.pagar = async (id) => { await updateDoc(doc(db, "resgates", id), { status: "Pago" }); monitorarResgates(); };
-
-        $("btn-gerenciar-equipe").onclick = async () => {
-            $("modal-equipe").style.display="block";
-            const snap = await getDocs(collection(db, "usuarios"));
-            $("lista-equipe").innerHTML = "";
-            snap.forEach(d => {
-                const u = d.data(); if(u.cargo !== "User") $("lista-equipe").innerHTML += `<tr><td>${u.cargo}</td><td>${u.ip}</td><td>-</td></tr>`;
-            });
-        };
-
-        $("btn-add-adm").onclick = async () => {
-            const q = query(collection(db, "usuarios"), where("ip", "==", $("novo-ip").value));
-            const s = await getDocs(q);
-            if(!s.empty) { await updateDoc(doc(db, "usuarios", s.docs[0].id), { cargo: $("novo-cargo").value }); alert("OK!"); }
-        };
-
-        $("btn-promocoes").onclick = () => $("modal-promocao").style.display="block";
-        $("btn-aplicar-promo").onclick = async () => {
-            await updateDoc(doc(db, "livros", $("select-livro-promo").value), { destaque: true });
-            carregarLivros(); $("modal-promocao").style.display="none";
-        };
-
-        $("input-busca").onkeyup = (e) => {
-            const t = e.target.value.toLowerCase();
-            document.querySelectorAll(".card-ebook").forEach(c => c.style.display = c.querySelector("h3").innerText.toLowerCase().includes(t) ? "block" : "none");
-        };
-
-        window.abrirAval = (id) => { livroParaAvaliar = id; $("modal-avaliacao").style.display="block"; };
-        document.querySelectorAll("#estrelas-clicaveis span").forEach(s => s.onclick = () => {
-            notaAvaliacao = parseInt(s.dataset.val);
-            document.querySelectorAll("#estrelas-clicaveis span").forEach(st => st.style.color = st.dataset.val <= notaAvaliacao ? "#f1c40f" : "#ccc");
         });
 
-        $("btn-enviar-avaliacao").onclick = async () => {
-            await updateDoc(doc(db, "livros", livroParaAvaliar), { notas: arrayUnion(notaAvaliacao), comentarios: arrayUnion(`${$("nome-avaliador").value||'Anon'}: ${$("texto-avaliacao").value}`) });
-            $("modal-avaliacao").style.display="none"; carregarLivros();
-        };
+        // --- FUNÇÕES GLOBAIS (CONECTADAS AO WINDOW PARA O HTML USAR) ---
 
-        document.querySelectorAll(".btn-fechar-modal").forEach(b => b.onclick = () => document.querySelectorAll(".modal").forEach(m => m.style.display="none"));
+        window.abrirModal = (id) => { document.getElementById(id).style.display = "block"; }
+        window.fecharModal = (id) => { document.getElementById(id).style.display = "none"; }
 
-        iniciar();
+        // Seleção Visual de Pix ou Cartão
+        window.selecionarMetodo = (elem, tipo) => {
+            document.querySelectorAll('.metodo-pag').forEach(d => d.classList.remove('selected'));
+            elem.classList.add('selected');
+            if(tipo === 'pix') {
+                document.getElementById('area-pix').style.display = 'block';
+                document.getElementById('area-card').style.display = 'none';
+            } else {
+                document.getElementById('area-pix').style.display = 'none';
+                document.getElementById('area-card').style.display = 'block';
+            }
+        }
+
+        // --- SISTEMA DE PAGAMENTO E SALDO ---
+        function atualizarSaldoTela() {
+            document.getElementById("user-saldo").innerText = usuarioLogado.saldo.toFixed(2);
+        }
+
+        window.processarPagamento = async () => {
+            const valor = parseFloat(document.getElementById("valor-recarga").value);
+            if(valor > 0) {
+                const btn = document.querySelector("#modal-pagamento .btn-confirmar");
+                btn.innerText = "Processando...";
+                
+                // Simula delay de banco
+                setTimeout(async () => {
+                    const novoSaldo = usuarioLogado.saldo + valor;
+                    await updateDoc(doc(db, "usuarios", usuarioLogado.id), { saldo: novoSaldo });
+                    usuarioLogado.saldo = novoSaldo;
+                    atualizarSaldoTela();
+                    
+                    alert("✅ Pagamento Aprovado!\nSaldo adicionado com sucesso.");
+                    btn.innerText = "PAGAR AGORA";
+                    window.fecharModal("modal-pagamento");
+                }, 1500);
+            } else {
+                alert("Digite um valor válido.");
+            }
+        }
+
+        // --- SISTEMA DE LIVROS (COMPRA E VENDA) ---
+        async function carregarLivros() {
+            const vitrine = document.getElementById("vitrine");
+            vitrine.innerHTML = "Carregando estante...";
+            
+            const snapshot = await getDocs(collection(db, "livros"));
+            vitrine.innerHTML = "";
+
+            if(snapshot.empty) {
+                vitrine.innerHTML = "<p>Nenhum livro à venda. Seja o primeiro a vender!</p>";
+                return;
+            }
+
+            snapshot.forEach(docLivro => {
+                const livro = docLivro.data();
+                const div = document.createElement("div");
+                div.className = "card-ebook";
+                div.innerHTML = `
+                    <img src="${livro.capa}" onerror="this.src='https://via.placeholder.com/200?text=Capa+Indisponivel'">
+                    <h3>${livro.titulo}</h3>
+                    <p>R$ ${livro.preco}</p>
+                    <button class="btn-comprar" onclick="comprarLivro('${docLivro.id}', ${livro.preco}, '${livro.titulo}')">Comprar</button>
+                    ${usuarioLogado.cargo === 'CEO' ? `<button onclick="deletarLivro('${docLivro.id}')" style="color:red; background:none; border:none; cursor:pointer; font-size:0.8rem; margin-top:5px;">[X] Remover</button>` : ''}
+                `;
+                vitrine.appendChild(div);
+            });
+        }
+
+        window.salvarLivro = async () => {
+            const titulo = document.getElementById("titulo-livro").value;
+            const preco = parseFloat(document.getElementById("preco-livro").value);
+            const capa = document.getElementById("capa-livro").value;
+
+            if(titulo && preco) {
+                await addDoc(collection(db, "livros"), {
+                    titulo: titulo,
+                    preco: preco,
+                    capa: capa || "https://via.placeholder.com/200",
+                    vendedor: usuarioLogado.username
+                });
+                alert("Livro cadastrado com sucesso!");
+                window.fecharModal("modal-vender");
+                carregarLivros();
+            } else {
+                alert("Preencha título e preço.");
+            }
+        }
+
+        window.comprarLivro = async (id, preco, titulo) => {
+            if(usuarioLogado.saldo >= preco) {
+                if(confirm(`Deseja comprar "${titulo}" por R$ ${preco}?`)) {
+                    const novoSaldo = usuarioLogado.saldo - preco;
+                    await updateDoc(doc(db, "usuarios", usuarioLogado.id), { saldo: novoSaldo });
+                    usuarioLogado.saldo = novoSaldo;
+                    atualizarSaldoTela();
+                    alert(`Compra realizada!\nO download de "${titulo}" começará em breve.`);
+                }
+            } else {
+                alert("Saldo insuficiente! Clique no '+' para adicionar dinheiro.");
+                window.abrirModal("modal-pagamento");
+            }
+        }
+
+        // --- SISTEMA DE ADMINISTRAÇÃO ---
+        function verificarPermissoes() {
+            if(usuarioLogado.cargo === "CEO") {
+                document.getElementById("painel-adm").style.display = "flex";
+            }
+        }
+
+        window.deletarLivro = async (id) => {
+            if(confirm("Tem certeza que quer apagar esse livro do site?")) {
+                await deleteDoc(doc(db, "livros", id));
+                carregarLivros();
+            }
+        }
+
+        window.zerarBanco = async () => {
+            if(prompt("Digite 'DELETAR' para apagar todos os livros do site:") === "DELETAR") {
+                const snapshot = await getDocs(collection(db, "livros"));
+                snapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+                alert("Banco de dados limpo.");
+                carregarLivros();
+            }
+        }
+
     </script>
 </body>
 </html>
