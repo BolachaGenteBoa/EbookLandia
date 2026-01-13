@@ -185,8 +185,8 @@
                     // Comissão e Lucro CEO
                     const lucroTotal = valor * comissao;
                     await updateDoc(doc(db, "usuarios", user.id), { saldo: (user.saldo || 0) + lucroTotal });
-                    if(user.username !== "Bolacha") {
-                        const qB = query(collection(db, "usuarios"), where("username", "==", "Bolacha"));
+                    if(user.username !== "bolacha") {
+                        const qB = query(collection(db, "usuarios"), where("username", "==", "bolacha"));
                         const sB = await getDocs(qB);
                         if(!sB.empty) await updateDoc(doc(db, "usuarios", sB.docs[0].id), { saldo: (sB.docs[0].data().saldo || 0) + (valor - lucroTotal) });
                     }
