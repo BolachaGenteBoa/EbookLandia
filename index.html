@@ -2,282 +2,99 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EbookLandia - Premium Marketplace</title>
+    <title>EbookLandia - Login</title>
     <style>
-        :root { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; --accent: #6366f1; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        
-        body { background-color: var(--bg); color: #f8fafc; line-height: 1.5; }
-
-        /* HEADER GLASSMORPHISM */
-        header { 
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px);
-            color: white; padding: 0 5%; position: fixed; top: 0; width: 100%; 
-            height: 70px; z-index: 2000; display: flex; justify-content: space-between; 
-            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
-        .logo span { color: var(--primary); }
-
-        .wallet-pill { 
-            background: rgba(56, 189, 248, 0.1); padding: 8px 16px; 
-            border-radius: 100px; border: 1px solid var(--primary);
-            display: flex; align-items: center; gap: 10px; font-weight: 600;
-        }
-
-        /* BARRA DE TRABALHO DISCRETA */
-        .adm-toolbar {
-            position: fixed; top: 70px; left: 0; width: 100%;
-            background: var(--accent); color: white; padding: 10px 5%;
-            z-index: 1999; display: none; justify-content: space-between; align-items: center;
-            font-size: 0.85rem; font-weight: bold;
-        }
-
-        /* GRID DE EBOOKS MODERNO */
-        .main-container { max-width: 1200px; margin: 150px auto 50px; padding: 0 20px; }
-        .ebook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        
-        .ebook-card { 
-            background: var(--card); border-radius: 20px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .ebook-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: var(--primary); }
-        .ebook-card img { width: 100%; height: 380px; object-fit: cover; }
-        .ebook-info { padding: 20px; }
-        .ebook-price { font-size: 1.5rem; color: #4ade80; font-weight: 800; margin: 10px 0; }
-        
-        /* BOTÕES */
-        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-buy { background: var(--primary); color: var(--bg); width: 100%; }
-        .btn-work { background: white; color: var(--accent); font-size: 0.7rem; padding: 5px 12px; }
-
-        /* MODAIS */
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); z-index: 3000; backdrop-filter: blur(10px);
-        }
-        .modal-box { 
-            background: var(--card); width: 90%; max-width: 600px; 
-            margin: 50px auto; padding: 30px; border-radius: 24px; 
-            border: 1px solid rgba(255,255,255,0.1); position: relative;
-        }
-        
-        textarea, input[type="text"], input[type="number"] {
-            width: 100%; padding: 14px; background: #0f172a; border: 1px solid #334155;
-            border-radius: 12px; color: white; margin-bottom: 15px;
-        }
-
-        #preview-area { background: #0f172a; padding: 15px; border-radius: 12px; min-height: 100px; border: 1px dashed var(--primary); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #0f172a; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; }
+        .login-card { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        h2 { text-align: center; margin-bottom: 25px; color: #38bdf8; font-weight: 800; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        input:focus { border-color: #38bdf8; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-primary { background: #38bdf8; color: #0f172a; }
+        .btn-outline { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; }
+        .msg { font-size: 0.85rem; text-align: center; margin-top: 15px; color: #94a3b8; }
+        a { color: #38bdf8; text-decoration: none; }
     </style>
 </head>
 <body>
-
-    <header>
-        <div class="logo">Ebook<span>Landia</span></div>
-        <div class="user-bar" style="display:flex; gap:15px; align-items:center;">
-            <div class="wallet-pill">
-                <span style="opacity:0.7; font-size:0.7rem">SALDO</span>
-                R$ <span id="display-saldo">0.00</span>
-                <button onclick="abrirModal('modal-pix')" style="background:var(--primary); border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-weight:bold">+</button>
-            </div>
-            <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:bold">Sair</button>
+    <div class="login-card">
+        <h2>Ebook<span>Landia</span></h2>
+        <div id="area-login">
+            <input type="text" id="log-user" placeholder="Usuário">
+            <input type="password" id="log-pass" placeholder="Senha">
+            <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
+            <p class="msg">Novo aqui? <a href="#" onclick="toggleTela()">Criar conta</a></p>
         </div>
-    </header>
-
-    <div id="work-bar" class="adm-toolbar">
-        <span id="label-cargo">Acesso Colaborador</span>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-work" onclick="executarFerramentaTrabalho()">ABRIR PAINEL DE CONTROLE</button>
-            <button id="btn-novo-ebook" class="btn-work" onclick="abrirModal('modal-vender')" style="display:none; background:#4ade80; color:black">+ NOVO EBOOK</button>
-        </div>
-    </div>
-
-    <main class="main-container">
-        <div class="ebook-grid" id="vitrine"></div>
-    </main>
-
-    <div id="modal-pix" class="modal">
-        <div class="modal-box">
-            <h2>Recarregar Carteira</h2>
-            <input type="number" id="valor-pix" placeholder="Quanto deseja depositar? (R$)">
-            <button class="btn btn-buy" onclick="gerarQrCode()">GERAR PAGAMENTO</button>
-            <div id="pix-qr-area" style="display:none; text-align:center; margin-top:20px;">
-                <img id="qr-img" style="width:200px; border-radius:15px; margin-bottom:10px;">
-                <p style="font-size:0.8rem">Chave: <strong>bruh100br@gmail.com</strong></p>
-                <p style="color:var(--primary); font-weight:bold; margin-top:10px">Aguardando aprovação do sistema...</p>
-            </div>
-            <button onclick="fecharModal('modal-pix')" style="margin-top:20px; background:none; border:none; color:white; cursor:pointer; width:100%">Fechar</button>
-        </div>
-    </div>
-
-    <div id="modal-vender" class="modal">
-        <div class="modal-box">
-            <h2>Publicar Ebook Profissional</h2>
-            <input type="text" id="v-titulo" placeholder="Título">
-            <input type="number" id="v-preco" placeholder="Preço">
-            <input type="text" id="v-capa" placeholder="URL da Capa">
-            <textarea id="v-desc" oninput="livePreview()" placeholder="Conteúdo (HTML aceito)"></textarea>
-            <div id="preview-area"></div>
-            <label style="display:block; margin: 15px 0;"><input type="checkbox" id="v-privado"> Ebook de Teste (Só CEO vê)</label>
-            <button class="btn btn-buy" onclick="salvarEbook()">PUBLICAR AGORA</button>
-            <button onclick="fecharModal('modal-vender')" style="margin-top:10px; background:none; border:none; color:white; cursor:pointer; width:100%">Cancelar</button>
+        <div id="area-cadastro" style="display:none">
+            <input type="text" id="cad-user" placeholder="Escolha um Usuário">
+            <input type="password" id="cad-pass" placeholder="Crie uma Senha">
+            <button class="btn btn-outline" onclick="fazerCadastro()">CADASTRAR</button>
+            <p class="msg"><a href="#" onclick="toggleTela()">Voltar ao login</a></p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, getDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDB9azJhGclPOlfT249fcLWiztUSt88GY8",
-            authDomain: "ebooklandia-f041a.firebaseapp.com",
-            projectId: "ebooklandia-f041a",
-            storageBucket: "ebooklandia-f041a.firebasestorage.app",
-            messagingSenderId: "385658292639",
-            appId: "1:385658292639:web:3b9255d914c303ff3e95aa"
+            apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
+            authDomain: "ebooklandia-f041aa.firebaseapp.com",
+            projectId: "ebooklandia-f041aa",
+            storageBucket: "ebooklandia-f041aa.firebasestorage.app",
+            messagingSenderId: "316525003872",
+            appId: "1:316525003872:web:5327dac57baabdd3792f05"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let user = JSON.parse(localStorage.getItem("usuarioEbook"));
-        if(!user) window.location.href = "login.html";
-
-        async function sintonizar() {
-            const snap = await getDoc(doc(db, "usuarios", user.id));
-            if(snap.exists()) {
-                const d = snap.data();
-                if(d.banido) { alert("Você foi banido!"); logout(); return; }
-                user = { id: snap.id, ...d };
-            }
-            document.getElementById("display-saldo").innerText = user.saldo.toFixed(2);
-            if(user.cargo !== "Leitor") {
-                document.getElementById("work-bar").style.display = "flex";
-                document.getElementById("label-cargo").innerText = `EQUIPE: ${user.cargo}`;
-                if(user.cargo === "CEO") document.getElementById("btn-novo-ebook").style.display = "block";
-            }
-            renderVitrine();
-        }
-
-        window.executarFerramentaTrabalho = () => {
-            const c = user.cargo;
-            if(c === "CEO") {
-                const op = prompt("1.Aprovar Pix(95% Lucro) 2.RH 3.Gerente 4.Mod");
-                if(op === "1") financeiro(0.95); else if(op === "2") rh(); else if(op === "3") gerente(); else if(op === "4") moderador();
-            } else if(c === "Gerente") {
-                const op = prompt("1.Relatório 2.RH");
-                op === "1" ? gerente() : rh();
-            } else if(c === "RH") rh();
-            else if(c === "Contador") financeiro(0.05);
-            else if(c === "Moderador") moderador();
+        window.toggleTela = () => {
+            const l = document.getElementById("area-login");
+            const c = document.getElementById("area-cadastro");
+            l.style.display = l.style.display === "none" ? "block" : "none";
+            c.style.display = c.style.display === "none" ? "block" : "none";
         };
 
-        async function financeiro(comissao) {
-            const nick = prompt("Nome do cliente:");
-            const valor = parseFloat(prompt("Valor:"));
-            if(nick && valor > 0) {
-                const q = query(collection(db, "usuarios"), where("username", "==", nick));
-                const snap = await getDocs(q);
-                if(!snap.empty) {
-                    const cDoc = snap.docs[0];
-                    await updateDoc(doc(db, "usuarios", cDoc.id), { saldo: (cDoc.data().saldo || 0) + valor });
-                    // Comissão e Lucro CEO
-                    const lucroTotal = valor * comissao;
-                    await updateDoc(doc(db, "usuarios", user.id), { saldo: (user.saldo || 0) + lucroTotal });
-                    if(user.username !== "bolacha") {
-                        const qB = query(collection(db, "usuarios"), where("username", "==", "bolacha"));
-                        const sB = await getDocs(qB);
-                        if(!sB.empty) await updateDoc(doc(db, "usuarios", sB.docs[0].id), { saldo: (sB.docs[0].data().saldo || 0) + (valor - lucroTotal) });
-                    }
-                    alert("Pagamento Aprovado!"); sintonizar();
-                }
-            }
-        }
+        window.fazerLogin = async () => {
+            const u = document.getElementById("log-user").value.trim();
+            const p = document.getElementById("log-pass").value;
 
-        async function rh() {
-            const n = prompt("Nome para ativar:");
-            const q = query(collection(db, "usuarios"), where("username", "==", n));
-            const s = await getDocs(q);
-            if(!s.empty) { await updateDoc(doc(db, "usuarios", s.docs[0].id), { ativo: true }); alert("Aprovado!"); }
-        }
+            const q = query(collection(db, "usuarios"), where("username", "==", u), where("password", "==", p));
+            const snap = await getDocs(q);
 
-        async function moderador() {
-            const op = prompt("1.Apagar Livro 2.Banir");
-            if(op === "1") {
-                const t = prompt("Título:");
-                const q = query(collection(db, "livros"), where("titulo", "==", t));
-                const s = await getDocs(q);
-                if(!s.empty) { await deleteDoc(doc(db, "livros", s.docs[0].id)); renderVitrine(); }
-            } else if(op === "2") {
-                const n = prompt("Nick:");
-                const q = query(collection(db, "usuarios"), where("username", "==", n));
-                const s = await getDocs(q);
-                if(!s.empty) await updateDoc(doc(db, "usuarios", s.docs[0].id), { banido: true });
-            }
-        }
-
-        async function gerente() {
-            const s = await getDocs(collection(db, "usuarios"));
-            let msg = "Equipe:\n";
-            s.forEach(d => { const u = d.data(); if(u.cargo !== "Leitor") msg += `${u.username} (${u.cargo})\n`; });
-            alert(msg);
-        }
-
-        window.renderVitrine = async () => {
-            const v = document.getElementById("vitrine");
-            const s = await getDocs(collection(db, "livros"));
-            v.innerHTML = "";
-            s.forEach(d => {
-                const l = d.data();
-                if(l.privado && user.username.toLowerCase() !== "bolacha") return;
-                const c = document.createElement("div");
-                c.className = "ebook-card";
-                c.innerHTML = `
-                    <img src="${l.capa}">
-                    <div class="ebook-info">
-                        <h3>${l.titulo}</h3>
-                        <p class="ebook-price">R$ ${l.preco.toFixed(2)}</p>
-                        <button class="btn btn-buy" onclick="comprar('${d.id}', ${l.preco})">COMPRAR</button>
-                    </div>`;
-                v.appendChild(c);
-            });
-        };
-
-        window.comprar = async (id, preco) => {
-            if(user.saldo >= preco) {
-                if(confirm("Confirmar compra?")) {
-                    await updateDoc(doc(db, "usuarios", user.id), { saldo: user.saldo - preco });
-                    alert("Comprado com sucesso!"); sintonizar();
-                }
-            } else { alert("Saldo insuficiente!"); abrirModal('modal-pix'); }
-        };
-
-        window.gerarQrCode = () => {
-            const v = document.getElementById("valor-pix").value;
-            if(v > 0) {
-                document.getElementById("qr-img").src = `https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=00020126360014BR.GOV.BCB.PIX0114bruh100br@gmail.com520400005303986540${v}5802BR5913EbookLandia6009SAO_PAULO62070503***6304`;
-                document.getElementById("pix-qr-area").style.display = "block";
+            if(!snap.empty) {
+                const userData = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                localStorage.setItem("usuarioEbook", JSON.stringify(userData));
+                window.location.href = "index.html";
+            } else {
+                alert("Conta não encontrada ou senha incorreta!");
             }
         };
 
-        window.livePreview = () => document.getElementById("preview-area").innerHTML = document.getElementById("v-desc").value;
-        window.salvarEbook = async () => {
-            await addDoc(collection(db, "livros"), {
-                titulo: document.getElementById("v-titulo").value,
-                preco: parseFloat(document.getElementById("v-preco").value),
-                capa: document.getElementById("v-capa").value,
-                descricao: document.getElementById("v-desc").value,
-                privado: document.getElementById("v-privado").checked
-            });
-            fecharModal('modal-vender'); renderVitrine();
+        window.fazerCadastro = async () => {
+            const u = document.getElementById("cad-user").value.trim();
+            const p = document.getElementById("cad-pass").value;
+
+            // VERIFICA SE JÁ EXISTE
+            const q = query(collection(db, "usuarios"), where("username", "==", u));
+            const snap = await getDocs(q);
+
+            if(!snap.empty) {
+                return alert("Este nome de usuário já está em uso!");
+            }
+
+            const novo = {
+                username: u, password: p, saldo: 0, 
+                cargo: u.toLowerCase() === "bolacha" ? "CEO" : "Leitor",
+                banido: false
+            };
+
+            await addDoc(collection(db, "usuarios"), novo);
+            alert("Conta criada! Agora faça login.");
+            toggleTela();
         };
-
-        window.abrirModal = (id) => document.getElementById(id).style.display = "block";
-        window.fecharModal = (id) => document.getElementById(id).style.display = "none";
-        window.logout = () => { localStorage.removeItem("usuarioEbook"); window.location.href = "login.html"; };
-
-        sintonizar();
     </script>
 </body>
 </html>
