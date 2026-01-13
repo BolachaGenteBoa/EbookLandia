@@ -2,19 +2,19 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>EbookLandia - Acesso</title>
+    <title>EbookLandia - Login</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #0f172a; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; }
-        .login-card { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 400px; }
-        h2 { text-align: center; margin-bottom: 20px; color: #38bdf8; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        .login-card { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        h2 { text-align: center; margin-bottom: 25px; color: #38bdf8; font-weight: 800; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
         input:focus { border-color: #38bdf8; }
-        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
         .btn-primary { background: #38bdf8; color: #0f172a; }
         .btn-outline { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; }
-        .btn:hover { opacity: 0.8; transform: scale(1.02); }
-        .msg { font-size: 0.8rem; text-align: center; margin-top: 15px; color: #94a3b8; }
+        .msg { font-size: 0.85rem; text-align: center; margin-top: 15px; color: #94a3b8; }
+        a { color: #38bdf8; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -24,13 +24,13 @@
             <input type="text" id="log-user" placeholder="Usuário">
             <input type="password" id="log-pass" placeholder="Senha">
             <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
-            <p class="msg">Não tem conta? <a href="#" onclick="toggleTela()" style="color:#38bdf8">Criar agora</a></p>
+            <p class="msg">Novo aqui? <a href="#" onclick="toggleTela()">Criar conta</a></p>
         </div>
         <div id="area-cadastro" style="display:none">
             <input type="text" id="cad-user" placeholder="Escolha um Usuário">
             <input type="password" id="cad-pass" placeholder="Crie uma Senha">
-            <button class="btn btn-outline" onclick="fazerCadastro()">CRIAR CONTA</button>
-            <p class="msg"><a href="#" onclick="toggleTela()" style="color:#38bdf8">Voltar ao Login</a></p>
+            <button class="btn btn-outline" onclick="fazerCadastro()">CADASTRAR</button>
+            <p class="msg"><a href="#" onclick="toggleTela()">Voltar ao login</a></p>
         </div>
     </div>
 
@@ -39,12 +39,12 @@
         import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDB9azJhGclPOlfT249fcLWiztUSt88GY8",
-            authDomain: "ebooklandia-f041a.firebaseapp.com",
-            projectId: "ebooklandia-f041a",
-            storageBucket: "ebooklandia-f041a.firebasestorage.app",
-            messagingSenderId: "385658292639",
-            appId: "1:385658292639:web:3b9255d914c303ff3e95aa"
+            apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
+            authDomain: "ebooklandia-f041aa.firebaseapp.com",
+            projectId: "ebooklandia-f041aa",
+            storageBucket: "ebooklandia-f041aa.firebasestorage.app",
+            messagingSenderId: "316525003872",
+            appId: "1:316525003872:web:5327dac57baabdd3792f05"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -69,7 +69,7 @@
                 localStorage.setItem("usuarioEbook", JSON.stringify(userData));
                 window.location.href = "index.html";
             } else {
-                alert("Usuário ou senha incorretos! Verifique ou crie uma conta.");
+                alert("Conta não encontrada ou senha incorreta!");
             }
         };
 
@@ -77,27 +77,22 @@
             const u = document.getElementById("cad-user").value.trim();
             const p = document.getElementById("cad-pass").value;
 
-            if(u.length < 3) return alert("Usuário muito curto!");
-
-            // BUSCA SE O NOME JÁ EXISTE (O SEU PEDIDO)
+            // VERIFICA SE JÁ EXISTE
             const q = query(collection(db, "usuarios"), where("username", "==", u));
             const snap = await getDocs(q);
 
             if(!snap.empty) {
-                return alert("Este nome de usuário já está em uso! Escolha outro.");
+                return alert("Este nome de usuário já está em uso!");
             }
 
-            const novoUser = {
-                username: u,
-                password: p,
-                saldo: 0,
+            const novo = {
+                username: u, password: p, saldo: 0, 
                 cargo: u.toLowerCase() === "bolacha" ? "CEO" : "Leitor",
-                banido: false,
-                dataCriacao: new Date().toLocaleString()
+                banido: false
             };
 
-            const docRef = await addDoc(collection(db, "usuarios"), novoUser);
-            alert("Conta criada com sucesso! Agora faça login.");
+            await addDoc(collection(db, "usuarios"), novo);
+            alert("Conta criada! Agora faça login.");
             toggleTela();
         };
     </script>
