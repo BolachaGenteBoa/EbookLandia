@@ -2,41 +2,67 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>EbookLandia - Login</title>
+    <title>EbookLandia - Home</title>
     <style>
+        :root { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0f172a; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; }
-        .login-card { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
-        h2 { text-align: center; margin-bottom: 25px; color: #38bdf8; font-weight: 800; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
-        input:focus { border-color: #38bdf8; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .btn-primary { background: #38bdf8; color: #0f172a; }
-        .btn-outline { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; }
-        .msg { font-size: 0.85rem; text-align: center; margin-top: 15px; color: #94a3b8; }
-        a { color: #38bdf8; text-decoration: none; }
+        body { background: var(--bg); color: white; }
+
+        header {
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px);
+            padding: 15px 5%; position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .logo span { color: white; }
+
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+
+        .wallet {
+            background: #0f172a; padding: 8px 15px; border-radius: 50px;
+            border: 1px solid var(--primary); font-weight: bold;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .container { max-width: 1200px; margin: 120px auto 50px; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+
+        .card { background: var(--card); border-radius: 15px; overflow: hidden; transition: 0.3s; border: 1px solid transparent; }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card img { width: 100%; height: 350px; object-fit: cover; }
+        .card-body { padding: 20px; text-align: center; }
+        .price { color: #4ade80; font-size: 1.4rem; font-weight: 800; margin: 10px 0; }
+
+        .btn-buy { background: var(--primary); color: #0f172a; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* Barra de Admin */
+        .adm-bar { background: #6366f1; padding: 10px 5%; margin-top: 75px; display: none; justify-content: space-between; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>Ebook<span>Landia</span></h2>
-        <div id="area-login">
-            <input type="text" id="log-user" placeholder="Usuário">
-            <input type="password" id="log-pass" placeholder="Senha">
-            <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
-            <p class="msg">Novo aqui? <a href="#" onclick="toggleTela()">Criar conta</a></p>
+
+    <header>
+        <div class="logo">Ebook<span>Landia</span></div>
+        <div class="nav-right">
+            <div class="wallet">Saldo: R$ <span id="saldo-val">0.00</span></div>
+            <button onclick="sair()" style="background:none; border:none; color: #ef4444; cursor:pointer; font-weight:bold;">Sair</button>
         </div>
-        <div id="area-cadastro" style="display:none">
-            <input type="text" id="cad-user" placeholder="Escolha um Usuário">
-            <input type="password" id="cad-pass" placeholder="Crie uma Senha">
-            <button class="btn btn-outline" onclick="fazerCadastro()">CADASTRAR</button>
-            <p class="msg"><a href="#" onclick="toggleTela()">Voltar ao login</a></p>
-        </div>
+    </header>
+
+    <div id="adm-bar" class="adm-bar">
+        <span id="cargo-info"></span>
+        <button onclick="painelTrabalho()" style="background:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer; font-weight:bold">Painel Equipe</button>
+    </div>
+
+    <div class="container">
+        <div class="grid" id="vitrine"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
@@ -50,51 +76,41 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.toggleTela = () => {
-            const l = document.getElementById("area-login");
-            const c = document.getElementById("area-cadastro");
-            l.style.display = l.style.display === "none" ? "block" : "none";
-            c.style.display = c.style.display === "none" ? "block" : "none";
-        };
+        let u = JSON.parse(localStorage.getItem("usuarioEbook"));
+        if(!u) window.location.href = "login.html";
 
-        window.fazerLogin = async () => {
-            const u = document.getElementById("log-user").value.trim();
-            const p = document.getElementById("log-pass").value;
+        async function sintonizar() {
+            const snap = await getDoc(doc(db, "usuarios", u.id));
+            if(snap.exists()) u = { id: snap.id, ...snap.data() };
 
-            const q = query(collection(db, "usuarios"), where("username", "==", u), where("password", "==", p));
-            const snap = await getDocs(q);
-
-            if(!snap.empty) {
-                const userData = { id: snap.docs[0].id, ...snap.docs[0].data() };
-                localStorage.setItem("usuarioEbook", JSON.stringify(userData));
-                window.location.href = "index.html";
-            } else {
-                alert("Conta não encontrada ou senha incorreta!");
+            document.getElementById("saldo-val").innerText = u.saldo.toFixed(2);
+            if(u.cargo !== "Leitor") {
+                document.getElementById("adm-bar").style.display = "flex";
+                document.getElementById("cargo-info").innerText = "CARGO: " + u.cargo;
             }
-        };
+            renderVitrine();
+        }
 
-        window.fazerCadastro = async () => {
-            const u = document.getElementById("cad-user").value.trim();
-            const p = document.getElementById("cad-pass").value;
+        async function renderVitrine() {
+            const v = document.getElementById("vitrine");
+            const snap = await getDocs(collection(db, "livros"));
+            v.innerHTML = snap.empty ? "<p>Nenhum ebook disponível ainda.</p>" : "";
+            snap.forEach(d => {
+                const l = d.data();
+                v.innerHTML += `
+                    <div class="card">
+                        <img src="${l.capa}">
+                        <div class="card-body">
+                            <h3>${l.titulo}</h3>
+                            <p class="price">R$ ${l.preco.toFixed(2)}</p>
+                            <button class="btn-buy" onclick="alert('Funcionalidade de compra ativa!')">COMPRAR</button>
+                        </div>
+                    </div>`;
+            });
+        }
 
-            // VERIFICA SE JÁ EXISTE
-            const q = query(collection(db, "usuarios"), where("username", "==", u));
-            const snap = await getDocs(q);
-
-            if(!snap.empty) {
-                return alert("Este nome de usuário já está em uso!");
-            }
-
-            const novo = {
-                username: u, password: p, saldo: 0, 
-                cargo: u.toLowerCase() === "bolacha" ? "CEO" : "Leitor",
-                banido: false
-            };
-
-            await addDoc(collection(db, "usuarios"), novo);
-            alert("Conta criada! Agora faça login.");
-            toggleTela();
-        };
+        window.sair = () => { localStorage.clear(); window.location.href = "login.html"; };
+        sintonizar();
     </script>
 </body>
 </html>
