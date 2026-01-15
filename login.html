@@ -2,99 +2,129 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>EbookLandia - Log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ebooklândia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0f172a; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; }
-        .login-card { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
-        h2 { text-align: center; margin-bottom: 25px; color: #38bdf8; font-weight: 800; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
-        input:focus { border-color: #38bdf8; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .btn-primary { background: #38bdf8; color: #0f172a; }
-        .btn-outline { background: transparent; border: 1px solid #38bdf8; color: #38bdf8; }
-        .msg { font-size: 0.85rem; text-align: center; margin-top: 15px; color: #94a3b8; }
-        a { color: #38bdf8; text-decoration: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; color: #2d3436;
+        }
+        .login-box {
+            background: #ffffff; padding: 40px; border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center; width: 100%; max-width: 400px;
+        }
+        header h1 { color: #4834d4; margin-bottom: 8px; }
+        header p { font-size: 0.9rem; color: #636e72; margin-bottom: 25px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .input-group input {
+            width: 100%; padding: 12px; border: 2px solid #f1f2f6;
+            border-radius: 8px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #4834d4; }
+        .btn-login {
+            width: 100%; padding: 14px; background: #4834d4; color: white;
+            border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
+            margin-top: 10px; transition: 0.3s;
+        }
+        .btn-login:hover { background: #3c2bb3; }
+        .secondary-btn {
+            background: none; color: #4834d4; border: 1px solid #4834d4; margin-top: 10px;
+        }
+        .message { margin-top: 15px; font-size: 0.85rem; min-height: 20px; }
+        .error { color: #d63031; }
+        .success { color: #27ae60; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>Ebook<span>Landia</span></h2>
-        <div id="area-login">
-            <input type="text" id="log-user" placeholder="Usuário">
-            <input type="password" id="log-pass" placeholder="Senha">
-            <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
-            <p class="msg">Novo aqui? <a href="#" onclick="toggleTela()">Criar conta</a></p>
-        </div>
-        <div id="area-cadastro" style="display:none">
-            <input type="text" id="cad-user" placeholder="Escolha um Usuário">
-            <input type="password" id="cad-pass" placeholder="Crie uma Senha">
-            <button class="btn btn-outline" onclick="fazerCadastro()">CADASTRAR</button>
-            <p class="msg"><a href="#" onclick="toggleTela()">Voltar ao login</a></p>
-        </div>
+
+    <div class="login-box">
+        <header>
+            <h1>📚 Ebooklândia</h1>
+            <p>Acesse sua conta ou crie uma nova.</p>
+        </header>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" id="email" placeholder="seu@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="password" placeholder="Sua senha" required>
+            </div>
+            
+            <button type="button" class="btn-login" id="btnLogin">Entrar</button>
+            <button type="button" class="btn-login secondary-btn" id="btnSignUp">Criar Conta</button>
+        </form>
+        
+        <div id="message" class="message"></div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // Sua configuração
         const firebaseConfig = {
             apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
             authDomain: "ebooklandia-f041aa.firebaseapp.com",
             projectId: "ebooklandia-f041aa",
             storageBucket: "ebooklandia-f041aa.firebasestorage.app",
             messagingSenderId: "316525003872",
-            appId: "1:316525003872:web:5327dac57baabdd3792f05"
+            appId: "1:316525003872:web:5327dac57baabdd3792f05",
+            measurementId: "G-MWMF7NW7EH"
         };
 
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        window.toggleTela = () => {
-            const l = document.getElementById("area-login");
-            const c = document.getElementById("area-cadastro");
-            l.style.display = l.style.display === "none" ? "block" : "none";
-            c.style.display = c.style.display === "none" ? "block" : "none";
-        };
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const messageDiv = document.getElementById('message');
 
-        window.fazerLogin = async () => {
-            const u = document.getElementById("log-user").value.trim();
-            const p = document.getElementById("log-pass").value;
+        // Função para mostrar mensagens
+        function showMsg(text, isError = true) {
+            messageDiv.innerText = text;
+            messageDiv.className = isError ? "message error" : "message success";
+        }
 
-            const q = query(collection(db, "usuarios"), where("username", "==", u), where("password", "==", p));
-            const snap = await getDocs(q);
+        // Lógica de Criar Conta
+        document.getElementById('btnSignUp').addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    showMsg("Conta criada com sucesso! Você já pode entrar.", false);
+                })
+                .catch((error) => {
+                    showMsg("Erro ao criar conta: " + error.message);
+                });
+        });
 
-            if(!snap.empty) {
-                const userData = { id: snap.docs[0].id, ...snap.docs[0].data() };
-                localStorage.setItem("usuarioEbook", JSON.stringify(userData));
-                window.location.href = "index.html";
-            } else {
-                alert("Conta não encontrada ou senha incorreta!");
-            }
-        };
+        // Lógica de Login
+        document.getElementById('btnLogin').addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
 
-        window.fazerCadastro = async () => {
-            const u = document.getElementById("cad-user").value.trim();
-            const p = document.getElementById("cad-pass").value;
-
-            // VERIFICA SE JÁ EXISTE
-            const q = query(collection(db, "usuarios"), where("username", "==", u));
-            const snap = await getDocs(q);
-
-            if(!snap.empty) {
-                return alert("Este nome de usuário já está em uso!");
-            }
-
-            const novo = {
-                username: u, password: p, saldo: 0, 
-                cargo: u.toLowerCase() === "bolacha" ? "CEO" : "Leitor",
-                banido: false
-            };
-
-            await addDoc(collection(db, "usuarios"), novo);
-            alert("Conta criada! Agora faça login.");
-            toggleTela();
-        };
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    showMsg("Login realizado! Redirecionando...", false);
+                    console.log("Usuário logado:", userCredential.user);
+                    // Aqui você pode redirecionar: window.location.href = "home.html";
+                })
+                .catch((error) => {
+                    showMsg("Erro no login: Verifique e-mail e senha.");
+                });
+        });
     </script>
 </body>
 </html>
