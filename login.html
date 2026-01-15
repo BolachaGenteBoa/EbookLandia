@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ebooklândia - Login </title>
+    <title>Ebooklândia - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,10 +25,8 @@
             min-height: 100vh;
         }
 
-        /* Layout Split Screen */
         .split-screen { display: flex; width: 100%; }
 
-        /* Lado Esquerdo - Branding */
         .left-side {
             flex: 1.2;
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(79, 70, 229, 0.9)), 
@@ -45,7 +43,6 @@
         .left-side h2 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; line-height: 1.1; }
         .left-side p { font-size: 1.2rem; opacity: 0.9; max-width: 500px; line-height: 1.6; }
 
-        /* Lado Direito - Formulário */
         .right-side {
             flex: 1;
             background: white;
@@ -56,10 +53,8 @@
         }
 
         .form-container { width: 100%; max-width: 400px; }
-
         .form-header { margin-bottom: 40px; }
         .form-header h1 { font-size: 1.8rem; color: var(--bg-dark); margin-bottom: 8px; }
-        .form-header p { color: var(--text-muted); font-size: 0.95rem; }
 
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { 
@@ -78,36 +73,56 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
+        /* Novas Classes para Checkbox e Links */
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
         .btn {
             width: 100%; padding: 14px; border-radius: 10px; border: none;
             font-size: 1rem; font-weight: 600; cursor: pointer;
             transition: all 0.3s ease; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-google { background: white; color: var(--text-main); border: 1.5px solid #e2e8f0; }
+        .btn-google:hover { background: #f8fafc; }
+        .btn-google img { width: 18px; }
 
         .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
-        .btn-outline:hover { background: #f5f3ff; }
 
         .divider {
             display: flex; align-items: center; text-align: center;
             margin: 20px 0; color: var(--text-muted); font-size: 0.8rem;
         }
-        .divider::before, .divider::after {
-            content: ''; flex: 1; border-bottom: 1px solid #e2e8f0;
-        }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
         .divider span { padding: 0 10px; }
 
-        .status-msg {
-            padding: 12px; border-radius: 8px; font-size: 0.85rem;
-            margin-bottom: 20px; display: none;
-        }
+        .status-msg { padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; display: none; }
         .status-error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; display: block; }
         .status-success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; display: block; }
 
-        /* Responsividade */
         @media (max-width: 968px) {
             .left-side { display: none; }
             .right-side { background: #f8fafc; }
@@ -120,7 +135,7 @@
     <div class="split-screen">
         <div class="left-side">
             <h2>Sua biblioteca<br>em qualquer lugar.</h2>
-            <p>Acesse já!.</p>
+            <p>Acesse já sua conta e continue sua leitura na Ebooklândia.</p>
         </div>
 
         <div class="right-side">
@@ -142,8 +157,20 @@
                         <input type="password" id="password" placeholder="••••••••" required>
                     </div>
 
-                    <button type="button" id="btnLogin" class="btn btn-primary">Verificar</button>
+                    <div class="auth-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe"> Lembrar de mim
+                        </label>
+                        <a href="#" id="btnReset" class="forgot-password">Esqueceu a senha?</a>
+                    </div>
+
+                    <button type="button" id="btnLogin" class="btn btn-primary">Entrar no Portal</button>
                     
+                    <button type="button" id="btnGoogle" class="btn btn-google">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+                        Entrar com Google
+                    </button>
+
                     <div class="divider"><span>OU</span></div>
                     
                     <button type="button" id="btnSignUp" class="btn btn-outline">Criar Nova Conta</button>
@@ -154,7 +181,17 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            sendPasswordResetEmail, 
+            signInWithPopup, 
+            GoogleAuthProvider,
+            setPersistence,
+            browserLocalPersistence,
+            browserSessionPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
@@ -168,60 +205,82 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
         const statusBox = document.getElementById('statusBox');
         const btnLogin = document.getElementById('btnLogin');
+        const emailInput = document.getElementById('email');
+        const rememberMe = document.getElementById('rememberMe');
 
         function notify(msg, type) {
             statusBox.innerText = msg;
             statusBox.className = `status-msg status-${type}`;
+            statusBox.style.display = 'block';
         }
 
-        // Tradução de erros comuns para o usuário
+        async function setAuthPersistence() {
+            const persistence = rememberMe.checked ? browserLocalPersistence : browserSessionPersistence;
+            return setPersistence(auth, persistence);
+        }
+
         function translateError(code) {
             switch(code) {
                 case 'auth/user-not-found': return "Usuário não encontrado.";
                 case 'auth/wrong-password': return "Senha incorreta.";
-                case 'auth/email-already-in-use': return "Este e-mail já está cadastrado.";
-                case 'auth/weak-password': return "A senha deve ter pelo menos 6 caracteres.";
-                case 'auth/invalid-email': return "E-mail inválido.";
-                default: return "Ocorreu um erro. Tente novamente.";
+                case 'auth/invalid-credential': return "E-mail ou senha incorretos.";
+                case 'auth/email-already-in-use': return "E-mail já cadastrado.";
+                default: return "Erro ao processar solicitação.";
             }
         }
 
-        // Login
+        // Login Tradicional
         btnLogin.addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
+            const email = emailInput.value;
             const password = document.getElementById('password').value;
-            
             if(!email || !password) return notify("Preencha todos os campos.", "error");
 
-            btnLogin.disabled = true;
-            btnLogin.innerText = "Verificando...";
-
             try {
+                await setAuthPersistence();
                 await signInWithEmailAndPassword(auth, email, password);
-                notify("Login bem-sucedido! Redirecionando...", "success");
-                // Ex: window.location.href = "/dashboard";
+                notify("Login realizado com sucesso!", "success");
             } catch (error) {
                 notify(translateError(error.code), "error");
-                btnLogin.disabled = false;
-                btnLogin.innerText = "Entrar no Portal";
             }
         });
 
-        // Cadastro
+        // Login Google
+        document.getElementById('btnGoogle').addEventListener('click', async () => {
+            try {
+                await setAuthPersistence();
+                await signInWithPopup(auth, provider);
+                notify("Conectado com Google!", "success");
+            } catch (error) {
+                notify("Falha na conexão com Google.", "error");
+            }
+        });
+
+        // Criar Conta
         document.getElementById('btnSignUp').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
+            const email = emailInput.value;
             const password = document.getElementById('password').value;
-
-            if(!email || !password) return notify("Preencha e-mail e senha para cadastrar.", "error");
-
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                notify("Conta criada com sucesso! Você já pode entrar.", "success");
+                notify("Conta criada! Você já pode entrar.", "success");
             } catch (error) {
                 notify(translateError(error.code), "error");
+            }
+        });
+
+        // Resetar Senha
+        document.getElementById('btnReset').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            if(!email) return notify("Digite seu e-mail para recuperar a senha.", "error");
+            try {
+                await sendPasswordResetEmail(auth, email);
+                notify("Link de recuperação enviado para seu e-mail!", "success");
+            } catch (error) {
+                notify("Erro ao enviar e-mail de recuperação.", "error");
             }
         });
     </script>
