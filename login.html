@@ -145,15 +145,15 @@
 
                 <div id="statusBox" class="status-msg"></div>
 
-                <form id="authForm">
+                <form id="authForm" novalidate>
                     <div class="input-group">
-                        <label>Endereço de E-mail</label>
-                        <input type="email" id="email" placeholder="nome@exemplo.com" required>
+                        <label>Nome de Usuário</label>
+                        <input type="text" id="usernameInput" placeholder="Digite seu usuário">
                     </div>
                     
                     <div class="input-group">
                         <label>Senha</label>
-                        <input type="password" id="password" placeholder="••••••••" required>
+                        <input type="password" id="passwordInput" placeholder="••••••••">
                     </div>
 
                     <div class="auth-options">
@@ -172,7 +172,7 @@
 
                     <div class="divider"><span>OU</span></div>
                     
-                    <button type="button" id="btnSignUp" class="btn btn-outline">Criar Nova Conta</button>
+                    <button type="button" id="btnSignUp" class="btn btn-outline" onclick="window.location.href='register.html'">Criar Nova Conta</button>
                 </form>
             </div>
         </div>
@@ -183,8 +183,6 @@
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
-            sendPasswordResetEmail, 
             signInWithPopup, 
             GoogleAuthProvider,
             setPersistence,
@@ -192,15 +190,13 @@
             browserSessionPersistence 
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Sua configuração Firebase (mantida conforme o original)
         const firebaseConfig = {
             apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
             authDomain: "ebooklandia-f041aa.firebaseapp.com",
             projectId: "ebooklandia-f041aa",
             storageBucket: "ebooklandia-f041aa.firebasestorage.app",
             messagingSenderId: "316525003872",
-            appId: "1:316525003872:web:5327dac57baabdd3792f05",
-            measurementId: "G-MWMF7NW7EH"
+            appId: "1:316525003872:web:5327dac57baabdd3792f05"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -209,8 +205,8 @@
 
         const statusBox = document.getElementById('statusBox');
         const authForm = document.getElementById('authForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
         const rememberMe = document.getElementById('rememberMe');
 
         function notify(msg, type) {
@@ -219,78 +215,35 @@
             statusBox.style.display = 'block';
         }
 
-        async function setAuthPersistence() {
-            const persistence = rememberMe.checked ? browserLocalPersistence : browserSessionPersistence;
-            return setPersistence(auth, persistence);
-        }
-
-        function translateError(code) {
-            switch(code) {
-                case 'auth/user-not-found': return "Usuário não encontrado.";
-                case 'auth/wrong-password': return "Senha incorreta.";
-                case 'auth/invalid-credential': return "E-mail ou senha incorretos.";
-                case 'auth/email-already-in-use': return "E-mail já cadastrado.";
-                default: return "Erro ao processar solicitação.";
-            }
-        }
-
-        // --- CORREÇÕES AQUI ---
-
-        // Login Tradicional (mudado para interceptar o 'submit' do formulário)
         authForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Impede o refresh da página
-            const email = emailInput.value;
+            e.preventDefault();
+            const username = usernameInput.value.trim().toLowerCase();
             const password = passwordInput.value;
+            
+            // O código adiciona o @ebooklandia.com automaticamente
+            const finalEmail = username ? `${username.replace(/\s+/g, '')}@ebooklandia.com` : "";
 
             try {
-                await setAuthPersistence();
-                await signInWithEmailAndPassword(auth, email, password);
-                notify("Login realizado! Redirecionando...", "success");
-                
-                // Redireciona após 1 segundo para dar tempo de ver a mensagem
+                const persistence = rememberMe.checked ? browserLocalPersistence : browserSessionPersistence;
+                await setPersistence(auth, persistence);
+                await signInWithEmailAndPassword(auth, finalEmail, password);
+                notify("Bem-vindo de volta!", "success");
                 setTimeout(() => { window.location.href = "index.html"; }, 1000);
             } catch (error) {
-                notify(translateError(error.code), "error");
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    notify("Usuário ou senha incorretos.", "error");
+                } else {
+                    notify("Erro: " + error.code, "error");
+                }
             }
         });
 
-        // Login Google (com redirecionamento)
         document.getElementById('btnGoogle').addEventListener('click', async () => {
             try {
-                await setAuthPersistence();
                 await signInWithPopup(auth, provider);
-                notify("Conectado com Google! Entrando...", "success");
-                setTimeout(() => { window.location.href = "index.html"; }, 1000);
+                window.location.href = "index.html";
             } catch (error) {
-                notify("Falha na conexão com Google.", "error");
-            }
-        });
-
-        // Criar Conta
-        document.getElementById('btnSignUp').addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            if(!email || !password) return notify("Preencha e-mail e senha para criar conta.", "error");
-
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                notify("Conta criada! Redirecionando...", "success");
-                setTimeout(() => { window.location.href = "index.html"; }, 1500);
-            } catch (error) {
-                notify(translateError(error.code), "error");
-            }
-        });
-
-        // Resetar Senha
-        document.getElementById('btnReset').addEventListener('click', async (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            if(!email) return notify("Digite seu e-mail para recuperar a senha.", "error");
-            try {
-                await sendPasswordResetEmail(auth, email);
-                notify("Link de recuperação enviado!", "success");
-            } catch (error) {
-                notify("Erro ao enviar e-mail de recuperação.", "error");
+                notify("Erro no login Google.", "error");
             }
         });
     </script>
