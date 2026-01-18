@@ -151,7 +151,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
@@ -177,31 +177,34 @@
         signUpForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim().toLowerCase();
             const pass = document.getElementById('password').value;
             const confirmPass = document.getElementById('confirmPassword').value;
 
-            // Validações básicas
             if(pass !== confirmPass) return notify("As senhas não coincidem!", "error");
             if(pass.length < 6) return notify("A senha deve ter no mínimo 6 caracteres.", "error");
 
-            // Truque técnico: Criamos um e-mail falso usando o nome de usuário
-            // Isso permite que o Firebase aceite o cadastro sem pedir e-mail real.
             const fakeEmail = `${username}@ebooklandia.com`;
 
             try {
-                await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-                notify("Conta criada com sucesso! Entrando...", "success");
+                // CORREÇÃO: Desloga qualquer usuário ativo antes de tentar criar um novo
+                await signOut(auth);
                 
-                // Redireciona para o index após o cadastro
+                document.getElementById('btnRegister').disabled = true;
+                
+                await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+                notify("Conta criada com sucesso! Redirecionando...", "success");
+                
                 setTimeout(() => {
                     window.location.href = "index.html";
                 }, 1500);
             } catch (error) {
+                document.getElementById('btnRegister').disabled = false;
+                
                 if(error.code === 'auth/email-already-in-use') {
-                    notify("Este nome de usuário já está em uso.", "error");
+                    notify("Este nome de usuário já existe.", "error");
                 } else {
-                    notify("Erro ao criar conta. Tente outro nome.", "error");
+                    notify("Erro: " + error.code, "error");
                 }
             }
         });
