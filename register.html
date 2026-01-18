@@ -187,22 +187,17 @@
             const fakeEmail = `${username}@ebooklandia.com`;
 
             try {
-                // CORREÇÃO: Desloga qualquer usuário ativo antes de tentar criar um novo
                 await signOut(auth);
-                
                 document.getElementById('btnRegister').disabled = true;
-                
                 await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-                notify("Conta criada com sucesso! Redirecionando...", "success");
-                
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 1500);
+                notify("Conta criada com sucesso! Entrando...", "success");
+                setTimeout(() => { window.location.href = "index.html"; }, 1500);
             } catch (error) {
                 document.getElementById('btnRegister').disabled = false;
-                
                 if(error.code === 'auth/email-already-in-use') {
                     notify("Este nome de usuário já existe.", "error");
+                } else if(error.code === 'auth/configuration-not-found') {
+                    notify("Erro: Ative 'E-mail/Senha' no Console do Firebase.", "error");
                 } else {
                     notify("Erro: " + error.code, "error");
                 }
