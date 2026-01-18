@@ -3,114 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Acesso ao Sistema</title>
+    <title>Ebooklândia - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilização moderna e centralizada */
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
             display: flex;
+            min-height: 100vh;
+        }
+
+        .split-screen { display: flex; width: 100%; }
+
+        .left-side {
+            flex: 1.2;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(79, 70, 229, 0.9)), 
+                        url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
+            padding: 80px;
+            color: white;
+        }
+
+        .left-side h2 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; line-height: 1.1; }
+        .left-side p { font-size: 1.2rem; opacity: 0.9; max-width: 500px; line-height: 1.6; }
+
+        .right-side {
+            flex: 1;
+            background: white;
+            display: flex;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            justify-content: center;
+            padding: 40px;
         }
 
-        .login-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
+        .form-container { width: 100%; max-width: 400px; }
+        .form-header { margin-bottom: 40px; }
+        .form-header h1 { font-size: 1.8rem; color: var(--bg-dark); margin-bottom: 8px; }
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #666;
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { 
+            display: block; font-size: 0.85rem; font-weight: 500; 
+            color: var(--text-main); margin-bottom: 6px; 
         }
 
         .input-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box; /* Garante que o padding não quebre a largura */
+            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 1rem; outline: none;
+            transition: all 0.2s ease; color: var(--text-main);
         }
 
-        button {
-            width: 100%;
-            padding: 1rem;
-            background-color: #764ba2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
             cursor: pointer;
-            transition: background 0.3s;
         }
 
-        button:hover {
-            background-color: #5a3782;
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        .error-message {
-            color: #ff4d4d;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            text-align: center;
-            display: none;
+        .btn {
+            width: 100%; padding: 14px; border-radius: 10px; border: none;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        .btn-google { background: white; color: var(--text-main); border: 1.5px solid #e2e8f0; }
+        .btn-google:hover { background: #f8fafc; }
+        .btn-google img { width: 18px; }
+
+        .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+
+        .divider {
+            display: flex; align-items: center; text-align: center;
+            margin: 20px 0; color: var(--text-muted); font-size: 0.8rem;
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
+        .divider span { padding: 0 10px; }
+
+        .status-msg { padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; display: none; }
+        .status-error { background: #fef2f2; color: var(--error); border: 1px solid #fecaca; display: block; }
+        .status-success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; display: block; }
+
+        @media (max-width: 968px) {
+            .left-side { display: none; }
+            .right-side { background: #f8fafc; }
+            .form-container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Bem-vindo</h2>
-    <form id="loginForm">
-        <div class="input-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" placeholder="seu@email.com" required>
+    <div class="split-screen">
+        <div class="left-side">
+            <h2>Sua biblioteca<br>em qualquer lugar.</h2>
+            <p>Acesse já sua conta e continue sua leitura na Ebooklândia.</p>
         </div>
-        <div class="input-group">
-            <label for="password">Senha</label>
-            <input type="password" id="password" placeholder="Digite sua senha" required>
+
+        <div class="right-side">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1>Bem-vindo à Ebooklândia📚</h1>
+                </div>
+
+                <div id="statusBox" class="status-msg"></div>
+
+                <form id="authForm">
+                    <div class="input-group">
+                        <label>Endereço de E-mail</label>
+                        <input type="email" id="email" placeholder="nome@exemplo.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="auth-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe"> Lembrar de mim
+                        </label>
+                        <a href="#" id="btnReset" class="forgot-password">Esqueceu a senha?</a>
+                    </div>
+
+                    <button type="submit" id="btnLogin" class="btn btn-primary">Entrar no Portal</button>
+                    
+                    <button type="button" id="btnGoogle" class="btn btn-google">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+                        Entrar com Google
+                    </button>
+
+                    <div class="divider"><span>OU</span></div>
+                    
+                    <button type="button" id="btnSignUp" class="btn btn-outline">Criar Nova Conta</button>
+                </form>
+            </div>
         </div>
-        <button type="submit">Entrar</button>
-        <p id="error" class="error-message">Por favor, preencha todos os campos corretamente.</p>
-    </form>
-</div>
+    </div>
 
-<script>
-    // Lógica para interceptar o envio e redirecionar
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Impede o recarregamento da página
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            sendPasswordResetEmail, 
+            signInWithPopup, 
+            GoogleAuthProvider,
+            setPersistence,
+            browserLocalPersistence,
+            browserSessionPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        // Sua configuração Firebase (mantida conforme o original)
+        const firebaseConfig = {
+            apiKey: "AIzaSyATu9zkykXFpiTD2Mlh5Ee6qroDC1tefi8",
+            authDomain: "ebooklandia-f041aa.firebaseapp.com",
+            projectId: "ebooklandia-f041aa",
+            storageBucket: "ebooklandia-f041aa.firebasestorage.app",
+            messagingSenderId: "316525003872",
+            appId: "1:316525003872:web:5327dac57baabdd3792f05",
+            measurementId: "G-MWMF7NW7EH"
+        };
 
-        // Validação simples (apenas para exemplo)
-        if (email && password.length >= 6) {
-            console.log("Login bem-sucedido! Redirecionando...");
-            window.location.href = "index.html"; // Redireciona para sua página principal
-        } else {
-            const errorMsg = document.getElementById('error');
-            errorMsg.style.display = 'block';
-            errorMsg.innerText = "Credenciais inválidas ou senha muito curta.";
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const statusBox = document.getElementById('statusBox');
+        const authForm = document.getElementById('authForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const rememberMe = document.getElementById('rememberMe');
+
+        function notify(msg, type) {
+            statusBox.innerText = msg;
+            statusBox.className = `status-msg status-${type}`;
+            statusBox.style.display = 'block';
         }
-    });
-</script>
 
+        async function setAuthPersistence() {
+            const persistence = rememberMe.checked ? browserLocalPersistence : browserSessionPersistence;
+            return setPersistence(auth, persistence);
+        }
+
+        function translateError(code) {
+            switch(code) {
+                case 'auth/user-not-found': return "Usuário não encontrado.";
+                case 'auth/wrong-password': return "Senha incorreta.";
+                case 'auth/invalid-credential': return "E-mail ou senha incorretos.";
+                case 'auth/email-already-in-use': return "E-mail já cadastrado.";
+                default: return "Erro ao processar solicitação.";
+            }
+        }
+
+        // --- CORREÇÕES AQUI ---
+
+        // Login Tradicional (mudado para interceptar o 'submit' do formulário)
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede o refresh da página
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            try {
+                await setAuthPersistence();
+                await signInWithEmailAndPassword(auth, email, password);
+                notify("Login realizado! Redirecionando...", "success");
+                
+                // Redireciona após 1 segundo para dar tempo de ver a mensagem
+                setTimeout(() => { window.location.href = "index.html"; }, 1000);
+            } catch (error) {
+                notify(translateError(error.code), "error");
+            }
+        });
+
+        // Login Google (com redirecionamento)
+        document.getElementById('btnGoogle').addEventListener('click', async () => {
+            try {
+                await setAuthPersistence();
+                await signInWithPopup(auth, provider);
+                notify("Conectado com Google! Entrando...", "success");
+                setTimeout(() => { window.location.href = "index.html"; }, 1000);
+            } catch (error) {
+                notify("Falha na conexão com Google.", "error");
+            }
+        });
+
+        // Criar Conta
+        document.getElementById('btnSignUp').addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            if(!email || !password) return notify("Preencha e-mail e senha para criar conta.", "error");
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                notify("Conta criada! Redirecionando...", "success");
+                setTimeout(() => { window.location.href = "index.html"; }, 1500);
+            } catch (error) {
+                notify(translateError(error.code), "error");
+            }
+        });
+
+        // Resetar Senha
+        document.getElementById('btnReset').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            if(!email) return notify("Digite seu e-mail para recuperar a senha.", "error");
+            try {
+                await sendPasswordResetEmail(auth, email);
+                notify("Link de recuperação enviado!", "success");
+            } catch (error) {
+                notify("Erro ao enviar e-mail de recuperação.", "error");
+            }
+        });
+    </script>
 </body>
 </html>
