@@ -126,17 +126,17 @@
                 <form id="signUpForm">
                     <div class="input-group">
                         <label>Nome de Usuário</label>
-                        <input type="text" id="username" placeholder="Ex: leitor_extraordinario" required>
+                        <input type="text" id="username" placeholder="Digite apenas o nome (ex: bolachinha)">
                     </div>
                     
                     <div class="input-group">
                         <label>Sua Senha</label>
-                        <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+                        <input type="text" id="password" placeholder="Sua senha">
                     </div>
 
                     <div class="input-group">
                         <label>Confirmar Senha</label>
-                        <input type="password" id="confirmPassword" placeholder="Repita sua senha" required>
+                        <input type="text" id="confirmPassword" placeholder="Repita a senha">
                     </div>
 
                     <button type="submit" id="btnRegister" class="btn btn-primary">Registrar Agora</button>
@@ -177,29 +177,33 @@
         signUpForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const pass = document.getElementById('password').value;
-            const confirmPass = document.getElementById('confirmPassword').value;
-
-            if(pass !== confirmPass) return notify("As senhas não coincidem!", "error");
-            if(pass.length < 6) return notify("A senha deve ter no mínimo 6 caracteres.", "error");
-
-            const fakeEmail = `${username}@ebooklandia.com`;
+            // Aqui pegamos o nome e transformamos em "email" apenas para o Firebase aceitar
+            const userValue = document.getElementById('username').value.trim();
+            const passValue = document.getElementById('password').value;
+            
+            // Se o usuário não digitar nada, enviamos vazio para o Firebase dar o erro dele
+            const fakeEmail = userValue ? `${userValue.toLowerCase().replace(/\s+/g, '')}@ebooklandia.com` : "";
 
             try {
                 await signOut(auth);
                 document.getElementById('btnRegister').disabled = true;
-                await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-                notify("Conta criada com sucesso! Entrando...", "success");
-                setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                
+                await createUserWithEmailAndPassword(auth, fakeEmail, passValue);
+                notify("Conta criada com sucesso!", "success");
+                
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
             } catch (error) {
                 document.getElementById('btnRegister').disabled = false;
-                if(error.code === 'auth/email-already-in-use') {
-                    notify("Este nome de usuário já existe.", "error");
-                } else if(error.code === 'auth/configuration-not-found') {
-                    notify("Erro: Ative 'E-mail/Senha' no Console do Firebase.", "error");
+                
+                // Traduzindo os erros do Firebase para você entender o que ele pede
+                if(error.code === 'auth/invalid-email') {
+                    notify("Erro: Digite um nome de usuário válido.", "error");
+                } else if(error.code === 'auth/weak-password') {
+                    notify("Erro: A senha precisa ter pelo menos 6 dígitos.", "error");
                 } else {
-                    notify("Erro: " + error.code, "error");
+                    notify("Erro Firebase: " + error.code, "error");
                 }
             }
         });
